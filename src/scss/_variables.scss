@@ -1,0 +1,56 @@
+$font-stack:	'Roboto Condensed', sans-serif;
+$font-size:	16px;
+
+$bkg-panel: rgba(66,66,66,.8);
+$color-panel: #ffd54f;
+
+$bkg-scroll-thumb: rgba(66, 66, 66, 0.8);
+$bkg-input: rgba(133, 127, 116, .5);
+$bkg-go: #76ff03;
+$bkg-item: rgba(124, 179, 66, 0.75);
+
+$panel-left-min-width: 150px;
+$panel-left-max-width: 35%;
+$panel-left-bottom: 30%;
+$panel-left-padding: 0 .5em;
+
+$tab-radius: .5em .5em;
+
+/* and mixins */
+@mixin keyframes($animation-name) {
+  @-webkit-keyframes #{$animation-name} {
+    @content;
+  }
+  @keyframes #{$animation-name} {
+    @content;
+  }
+}
+
+@mixin animation($str) {
+  -webkit-animation: #{$str};
+  animation: #{$str};
+}
+
+@mixin transform($property) {
+  -webkit-transform: $property;
+          transform: $property;
+}
+
+@mixin transform-origin($transform-origin: center center) {
+  -webkit-transform-origin: $transform-origin;
+          transform-origin: $transform-origin;
+}
+
+@mixin transition($args...) {
+  -webkit-transition: $args;
+  transition: $args;
+}
+
+/* extension. note just using :after here -- didn't work */
+%clearfix {
+  &:after {
+    content: "";
+    display: table;
+    clear: both;
+  }
+}

@@ -1,0 +1,407 @@
+@import 'variables';
+
+* {
+  box-sizing:border-box;
+}
+html, body, #map-canvas {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+html, body, input, button {
+  font: $font-size $font-stack;
+}
+
+input:focus, textarea:focus {
+  outline: none;
+}
+
+input, textarea {
+	//txt-light
+  color:$color-panel;
+}
+
+//panel for list
+#container-data {
+	position:absolute;
+
+  // bkg-list
+  background: $bkg-panel;
+
+	top:0;
+	left:0;
+	min-width: $panel-left-min-width;
+	max-width: $panel-left-max-width;
+  width: $panel-left-max-width;
+  bottom: $panel-left-bottom;
+
+  padding: $panel-left-padding;
+
+  // txt-light
+  color: $color-panel;
+}
+
+@include keyframes(extend) {
+  0% { bottom: 30%; }
+  100% { bottom: 32px; }
+}
+
+@include keyframes(unextend) {
+  0% { bottom:32px; }
+  100% { bottom:30%; }
+}
+
+/* slide data panel left off viewport and back */
+#container-data.close {
+  @include transform(translate(-100%, 0));
+  @include transition(transform 0.5s ease-out);
+}
+
+#container-data.open {
+  @include transform(translate(0%, 0));
+  @include transition(transform 0.5s ease-in);
+}
+
+/* animate data panel height (when images panel is resized) */
+#container-data.extend {
+  @include animation('extend 0.5s ease-out forwards');
+}
+
+#container-data.retract {
+  @include animation('unextend 0.5s ease-in forwards');
+}
+
+.tab-search {
+  position:absolute;
+  left:100%;
+
+  // bkg-list
+  background: $bkg-panel;
+
+  border-bottom-right-radius: $tab-radius;
+  cursor: pointer;
+}
+
+/* animate icon to point in direction each panel will next slide to */
+.icon-circle-left.rotate, .icon-circle-down.rotate {
+  @include transform(rotate(180deg));
+  @include transition(transform 0.5s 0.5s ease-in);
+}
+
+.icon-circle-left.unrotate, .icon-circle-down.unrotate {
+  @include transform(rotate(0deg));
+  @include transition(transform 0.5s 0.5s ease-in);
+}
+
+//panel for images
+#container-images {
+  position:absolute;
+  top: 100% - $panel-left-bottom;
+  left: 0;
+  right: 0;
+  bottom: 32px;
+
+  // bkg-list
+  background: $bkg-panel;
+
+  // txt-light
+  color: $color-panel;
+}
+
+#container-images.close {
+  @include animation('shrink 0.5s ease-out forwards');
+}
+
+#container-images.open {
+  @include animation('unshrink 0.5s ease-in forwards');
+}
+
+/* custom animation for top property of #container-images
+ *  https://css-tricks.com/almanac/properties/a/animation/
+ *
+ * precise positioning with calc works in chrome, firefox
+ */
+
+@include keyframes(shrink) {
+  0% {
+    top:70%;
+  }
+  100% {
+    top: calc(100% - 32px);
+  }
+}
+
+@include keyframes(unshrink) {
+  0% {
+    top:calc(100% - 32px);
+  }
+  100% {
+    top:70%;
+  }
+}
+
+/*
+  ie cannot understand the calc in @keyframes:
+  more generally, transforms: https://connect.microsoft.com/IE/feedback/details/814380/
+  ie10+ no longer supports conditional css so use media query hack:
+  https://philipnewcomer.net/2014/04/target-internet-explorer-10-11-css/
+*/
+@media all and (-ms-high-contrast: none), (-ms-high-contrast: active) {
+  /* IE10+ CSS styles go here */
+  #container-images.close {
+    animation:msshrink 0.5s ease-out forwards;
+  }
+
+  #container-images.open {
+    animation:msunshrink 0.5s ease-in forwards;
+  }
+}
+
+@keyframes msshrink {
+  0% {
+    top:70%;
+  }
+  100% {
+    top:95%;
+  }
+}
+
+@keyframes msunshrink {
+  0% {
+    top:95%;
+  }
+  100% {
+    top:70%;
+  }
+}
+
+.tab-images {
+  position:absolute;
+  height:1.5em;
+  top:-1.5em;
+  right:0;
+
+  background: $bkg-panel;
+  cursor: pointer;
+
+  padding:.25em .5em;
+  border-top-left-radius: $tab-radius;
+}
+
+.tab-images > span {
+  position:relative;
+  top:-.15em; //-.25em;
+  padding:0 0 .25em .25em;
+
+  /* same font treatment for both tabs */
+  text-transform: uppercase;
+}
+
+.container-search {
+  margin-bottom:1em;
+}
+
+.container-search h1 {
+  font-size:1em;
+  padding:.5em 0;
+  margin: 0;
+  letter-spacing: .15em;
+}
+
+.container-flex {
+  display:flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  align-content: flex-start;
+  align-items: flex-start;
+}
+
+.container-flex > label {
+  flex: 0 0 2.25em;
+  padding:.25em 0;
+  margin: .5em 0 0 0;
+}
+
+.container-flex > input[type="text"] {
+  // may be applied to more generic input/
+  border:none;
+
+  background-color: $bkg-input;
+
+  /* padding and margin same for label */
+  padding:.25em;
+  margin: .5em 0 0 .25em;
+
+  flex: 1 1 38px;
+}
+
+.container-list {
+  height:calc(100% - 8.5625em); /* 7.5625em is the height of .container-search */
+  overflow-y:auto;
+}
+.path1, .path2 {
+  fill: $color-panel;
+}
+.icon {
+  width:1em;
+  height:1em;
+}
+.icon-circle-left {
+  margin: .25em;
+}
+.icon-circle-down {
+  margin: 0;
+}
+.icon-target {
+  margin: .75em .25em 0 .5em;
+}
+.btn-go {
+  text-transform: uppercase;
+  text-align: center;
+  width:1.6875em; /* 1.6875em makes button height equal to text input height at 16px font size, at 18px font size, it's just less than a pixel shorter */
+  height:1.6875em;
+  border:none;
+  margin:.5em 0 0 .5em;
+  padding:0;
+
+  background: $bkg-go;
+}
+
+/* modified from http://output.jsbin.com/afAQAWA/2/ */
+.rotated-text {
+    margin:0;
+    display: inline-block;
+    overflow: hidden;
+    width: 1.5em;
+
+    //position:absolute;
+    top:2em;
+}
+
+.rotated-text-inner {
+    display: inline-block;
+    white-space: nowrap;
+    @include transform(translate(1.35em,0) rotate(90deg));
+    @include transform-origin(0 0);
+
+  line-height: 1.25em;
+  text-transform: uppercase;
+  margin-top:.5em;
+}
+
+.rotated-text-inner:before {
+    content: "";
+    float: left;
+    margin-top: 100%;
+}
+/* end taken from http://output.jsbin.com/afAQAWA/2/ */
+
+.container-list ul {
+  padding:0;
+  margin:0;
+  list-style-type: none;
+}
+
+.container-list li {
+  padding:.5em 1em;
+  margin: 0 .5em 2px .5em;
+  background: $bkg-item;
+  cursor:pointer;
+  @extend %clearfix;
+}
+
+.container-list li:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+.container-list li img {
+  position:relative;
+  float:left;
+  max-height:60px;
+  margin-right: 1em;
+}
+
+/* .slides is a div that can be scrolled left/right and contains images all of the same height */
+/* NB: dummying this up, it seems that flex is not what I want. */
+.container-slides {
+  position:absolute;
+  top:0;
+  bottom:0;
+  left:0;
+  right:0;
+  /* margin: 0 .5em .5em .5em; */
+  margin: 0 0 .5em 0;
+  /* overflow:auto; */
+  overflow-x: scroll;
+}
+/*
+#slides {
+  //arbitrarily large width
+  height: calc(100% - 1.5em);
+  width:10000px;
+  //width: auto;
+  margin-top: 1em;
+  margin-bottom: .5em;
+}
+
+// here assume div only one level deep from .slides
+#slides img {
+  position:relative;
+  float: left;
+
+  margin:0;
+
+  border-top: 2px solid #000;
+  border-bottom: 2px solid #000;
+  border-left: 1px solid #000;
+  border-right: 1px solid #000;
+
+  max-height: calc(100%);
+  width:auto; // help IE/
+}
+*/
+
+#slides {
+  display: flex;
+  flex-flow: row nowrap;
+  height: calc(100% - .25em); // - .5em);
+
+  /* margin-bottom: .5em; */
+}
+
+// here assume div only one level deep from .slides
+#slides img {
+  flex:0 0 auto;
+  align-self: auto;
+  margin:0;
+
+  border-top: 4px solid rgba(0, 0, 0, 0);
+  /* border-bottom: 2px solid rgba(0, 0, 0, 0); */
+  border-left: 1px solid rgba(0, 0, 0, 0);
+  border-right: 1px solid rgba(0, 0, 0, 0);
+
+  max-height: calc(100%);
+  width:auto; // help IE/
+}
+
+#slides img:first-child {
+  border-left-width: 2px;
+}
+
+#slides img:last-child {
+  border-right-width: 2px;
+}
+
+::-webkit-scrollbar {
+  -webkit-appearance: none;
+  width: .5rem; /*7px;*/
+  height: .5rem; /*7px;*/
+}
+::-webkit-scrollbar-thumb {
+  /* bkg-scroll-thumb */
+  background-color: $bkg-scroll-thumb;
+}

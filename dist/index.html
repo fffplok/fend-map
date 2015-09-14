@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<!-- based on samples/map-control-positioning-labels/flex04.html and meetup/m04.html. investigate using ko template -->
+  <head>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <meta charset="utf-8">
+    <title>FEND P5: Neighborhood Map</title>
+    <link href='http://fonts.googleapis.com/css?family=Roboto+Condensed' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="css/styles.min.css">
+  </head>
+  <body>
+    <svg style="position: absolute; width: 0; height: 0;" width="0" height="0" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+      <defs>
+        <symbol id="icon-circle-down" viewBox="0 0 1024 1024">
+          <title>circle-down</title>
+          <path class="path1" d="M1024 512c0-282.77-229.23-512-512-512s-512 229.23-512 512 229.23 512 512 512 512-229.23 512-512zM96 512c0-229.75 186.25-416 416-416s416 186.25 416 416-186.25 416-416 416-416-186.25-416-416z"></path>
+          <path class="path2" d="M317.256 354.744l-90.512 90.512 285.256 285.254 285.254-285.256-90.508-90.508-194.746 194.744z"></path>
+        </symbol>
+        <symbol id="icon-circle-left" viewBox="0 0 1024 1024">
+          <title>circle-left</title>
+          <path class="path1" d="M512 1024c282.77 0 512-229.23 512-512s-229.23-512-512-512-512 229.23-512 512 229.23 512 512 512zM512 96c229.75 0 416 186.25 416 416s-186.25 416-416 416-416-186.25-416-416 186.25-416 416-416z"></path><path class="path2" d="M669.256 317.256l-90.512-90.512-285.254 285.256 285.256 285.254 90.508-90.508-194.744-194.746z"></path>
+        </symbol>
+      </defs>
+    </svg>
+    <div id="map-canvas"></div>
+  	<div id="container-data" class="open">
+
+      <div class="tab-search">
+        <div class="rotated-text"><span class="rotated-text-inner">search</span></div>
+        <svg class="icon icon-circle-left"><use xlink:href="#icon-circle-left"></use></svg>
+      </div>
+
+      <div class="container-search">
+        <h1>Find Meetups</h1>
+        <div class="container-flex">
+          <label>Near:</label>
+          <!-- size attribute required for firefox -->
+          <input type="text" name="where" size="4" data-bind="textInput: location, event: {keyup: evalGoEnabled}">
+          <button class="btn-go" data-bind="click: goLocation, enable:goIsEnabled">go</button>
+        </div>
+        <div class="container-flex">
+            <label>Filter:</label>
+            <input type="text" name="what" size="4" value="all">
+        </div>
+      </div>
+
+      <div class="container-list">
+          <!-- <p>Curabitur arcu erat, accumsan id imperdiet et, porttitor at sem.</p> -->
+          <ul data-bind="visible: showGroups(), foreach: groups">
+            <li data-bind="text:name, click: triggerMarker">
+              <!--
+              <img data-bind="attr: { src: urlThumb, title: name, alt: name }">
+              <p data-bind="text:name"></p>
+              -->
+            </li>
+          </ul>
+        </div>
+  	</div> <!-- end container-data -->
+    <div id="container-images">
+      <div class="tab-images">
+        <svg class="icon icon-circle-down"><use xlink:href="#icon-circle-down"></use></svg>
+        <span>images</span>
+      </div>
+      <div class="container-slides">
+        <div id="slides" data-bind="foreach:images">
+          <img data-bind="attr: { src:src, title:title }">
+        </div>
+      </div>
+    </div>
+
+    <script src="https://maps.googleapis.com/maps/api/js?v=3.exp"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+    <script type="text/javascript" src="http://ajax.aspnetcdn.com/ajax/knockout/knockout-3.3.0.js"></script>
+    <script src="js/app.min.js"></script>
+  </body>
+</html>
