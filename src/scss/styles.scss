@@ -3,6 +3,11 @@
 * {
   box-sizing:border-box;
 }
+html {
+  /* Prevent font scaling in landscape while allowing user zoom */
+  -webkit-text-size-adjust: 100%;
+}
+
 html, body, #map-canvas {
   height: 100%;
   margin: 0;

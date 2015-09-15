@@ -5,7 +5,6 @@ var gulp = require('gulp'),
 	uglify = require('gulp-uglify'),
 	concat = require('gulp-concat'),
 	rename = require('gulp-rename'),
-	minifyCss = require('gulp-minify-css'),
 	sass = require('gulp-sass'),
 
 	reload = browserSync.reload,
@@ -22,6 +21,11 @@ var gulp = require('gulp'),
 		css: './dist/css',
 		html: './dist'
 	};
+
+function logError(err) {
+	console.log(err);
+	this.emit('end');
+}
 
 gulp.task('scripts', function(){
 	gulp.src(src.js) //, {base: 'src'})
@@ -40,8 +44,7 @@ gulp.task('html', function(){
 
 gulp.task('sass', function () {
   gulp.src(src.css)
-    .pipe(sass().on('error', sass.logError))
-    .pipe(minifyCss())
+    .pipe(sass({outputStyle: 'compressed'}).on('error', logError)) //sass.logError))
     .pipe(rename('styles.min.css'))
     .pipe(gulp.dest(dest.css))
     .pipe(reload({stream: true}));
