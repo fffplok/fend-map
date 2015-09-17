@@ -35,12 +35,12 @@
         <div class="container-flex">
           <label>Near:</label>
           <!-- size attribute required for firefox -->
-          <input type="text" name="where" size="4" data-bind="textInput: location, event: {keyup: evalGoEnabled}">
+          <input type="text" name="where" size="4" placeholder="city" data-bind="textInput: location, event: {keyup: evalGoEnabled}">
           <button class="btn-go" data-bind="click: goLocation, enable:goIsEnabled">go</button>
         </div>
         <div class="container-flex">
             <label>Filter:</label>
-            <input type="text" name="what" size="4" value="all">
+            <input type="text" name="what" size="4" placeholder="by name" data-bind="value:query, valueUpdate:'keyup'">
         </div>
       </div>
 

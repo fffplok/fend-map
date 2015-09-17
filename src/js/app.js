@@ -5,7 +5,7 @@
   var initialLocation = 'minneapolis',
       initialZoom = 11;
 
-  var map, geocoder, viewModel, infoWindow;
+  var map, geocoder, viewModel, infoWindow, meetupFilter;
 
   //google map related functions
   function initialize() {
@@ -88,7 +88,6 @@
       extendRetract += ($panelSearch.hasClass('retract')) ? ' retract' : '';
 
       //first time in, panelSearch may not have a class
-      //if (!$panelSearch.attr('class') || $panelSearch.hasClass('open')) {
       if ($panelSearch.hasClass('open')) {
         toggleSearch = "close"+extendRetract;
         toggleIcon = sClassIconSearch+" rotate";
@@ -135,8 +134,9 @@
     this.title = data.title;
   }
 
-  function Group(data) {
-    //console.log('Group, data:', data);
+  function Group(data, ix) {
+    //console.log('Group, data,:', data);
+    //console.log('Group, ix,:', ix);
     //name and city do not need to be observable
     this.name = data.name; //ko.observable(data.name);
     this.city = data.city; //ko.observable(data.city);
@@ -165,36 +165,50 @@
     this.strContent += '<div>'+this.description+'</div>';
 
     //make addMarker a prototype method of Group
-    this.addMarker();
+    this.addMarker(ix*200);
   }
 
   //can infoWindow be encapsulated in addMarker?
-  Group.prototype.addMarker = function() {
+  Group.prototype.addMarker = function(timeout) {
     //console.log('Group.prototype.addMarker, this:', this);
     //create content string for info window associated with this marker
 /*
     var strContent = '<img src='+this.urlThumb+' title='+this.name+' alt='+this.name+'>';
     strContent += '<h4>'+this.name+'</h4>';
     strContent += '<div>'+this.description+'</div>';
-*/
-    this.marker = new google.maps.Marker({
-      position: this.location,
-      title: this.name,
-      map: map
-    });
+*/  var group = this;
+    window.setTimeout(function() {
+      group.marker = new google.maps.Marker({
+        position: group.location,
+        title: group.name,
+        map: map,
+        animation: google.maps.Animation.DROP
+      });
 
-    var strContent = this.strContent;
-    this.marker.addListener('click', function() {
-      //map.setCenter(this.location);
-      map.panTo(this.position);
-      infoWindow.setContent(strContent);
-      infoWindow.open(map, this);
-    });
+      var strContent = group.strContent;
+      group.marker.addListener('click', function() {
+        group.triggerMarker();
+      });
+    }, timeout);
+
+  }
+
+  Group.prototype.stopMarkerAnimation = function() {
+    if (this.marker.getAnimation() !== null) {
+      this.marker.setAnimation(null);
+    }
   }
 
   Group.prototype.triggerMarker = function() {
     console.log('triggerMarker, this:', this);
-    //map.setCenter(this.location);
+    var group = this;
+    if (this.marker.getAnimation() !== null) {
+      this.marker.setAnimation(null);
+    } else {
+      this.marker.setAnimation(google.maps.Animation.BOUNCE);
+      window.setTimeout(this.stopMarkerAnimation.bind(this), 2150);
+    }
+
     map.panTo(this.location);
     infoWindow.setContent(this.strContent);
     infoWindow.open(map, this.marker);
@@ -231,7 +245,7 @@
                 self.groups().shift().removeMarker();
               }
             }
-            var mappedGroups = $.map(response.data, function(item) { return new Group(item) });
+            var mappedGroups = $.map(response.data, function(item, ix) { return new Group(item, ix) });
             self.groups(mappedGroups);
             //console.log('getMeetups after mapping, self.groups().length:', self.groups().length);
 
@@ -284,7 +298,6 @@
             //do cleanup here before mapping a new set of groups
             //self.images = [];
             if (self.images().length > 0) {
-              //remove markers, de-reference group objects so they may be garbage collected
               while (self.images().length > 0) {
                 self.images().shift();
               }
@@ -295,16 +308,6 @@
             });
             self.images(mappedImages);
 
-/*
-            response.photos.photo.forEach(function(item) {
-              links.push('https://farm'+item.farm+'.staticflickr.com/'+item.server+'/'+item.id+'_'+item.secret+'.jpg');
-              self.images.push(new Image());
-              self.images[i].src = links[i];
-              self.images[i].title = item.title;
-              $('#slides').append(self.images[i]);
-              ++i;
-            });
-*/
             //TODO: if no photo found, indicate this
 
             //console.log('images:',self.images);
@@ -338,12 +341,7 @@
     self.removeMarkers = function(){
 
     };
-/*
-    self.triggerMarker = function() {
-      console.log('triggerMarker, this:', this);
-    };
 
-*/
     self.goIsEnabled = ko.observable(false);
     self.evalGoEnabled = function() {
       console.log('self.location():', self.location());
@@ -361,6 +359,17 @@
       getMeetups();
     }
 
+    self.query = ko.observable('');
+
+    // Filter function for meetup list search
+/*
+    self.search = ko.computed(function() {
+      meetupFilter = ko.utils.arrayFilter(self.groups(), function(group){
+        //do something
+
+      return meetupFilter;
+    });
+*/
     getMeetups(); //get initial data
 
   } //end GroupsViewModel
