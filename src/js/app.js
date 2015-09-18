@@ -37,6 +37,9 @@
     infoWindow = new google.maps.InfoWindow({
       content: ''
     });
+    google.maps.event.addListener(infoWindow,'closeclick',function(){
+      viewModel.infoWinStatus.open = false;
+    });
     map = new google.maps.Map(mapDiv, mapOptions);
   }
 
@@ -135,13 +138,9 @@
   }
 
   function Group(data, ix) {
-    //console.log('Group, data,:', data);
-    //console.log('Group, ix,:', ix);
-    //name and city do not need to be observable
-    this.name = data.name; //ko.observable(data.name);
-    this.city = data.city; //ko.observable(data.city);
-    //this.lat = ko.observable(data.lat);
-    //this.lon = ko.observable(data.lon);
+    this.name = data.name;
+    this.city = data.city;
+    //this.infoDisplayed = false;
 
     this.description = data.description; //ko.observable(data.description);
 
@@ -199,9 +198,11 @@
     }
   }
 
-  Group.prototype.triggerMarker = function() {
+  Group.prototype.triggerMarker = function(item, e) {
     console.log('triggerMarker, this:', this);
-    var group = this;
+    //console.log('triggerMarker, e:', e);
+    //e will be undefined when marker is clicked. may be used to target the li of the meetup list
+
     if (this.marker.getAnimation() !== null) {
       this.marker.setAnimation(null);
     } else {
@@ -212,12 +213,19 @@
     map.panTo(this.location);
     infoWindow.setContent(this.strContent);
     infoWindow.open(map, this.marker);
+    viewModel.infoWinStatus.open = true;
   };
 
   Group.prototype.removeMarker = function() {
     this.marker.setMap(null);
   }
-
+/*
+  //Group.prototype.isSelected = viewModel.isSelected;
+  Group.prototype.isSelected = function() {
+    //return true when infoWindow is open and info displayed is of this particular group
+    return viewModel.infoWinStatus.open;
+  }
+*/
 
   function GroupsViewModel() {
     var self = this;
@@ -361,14 +369,16 @@
 
     self.query = ko.observable('');
 
+    self.infoWinStatus = {open:false};
+
+    self.isSelected = ko.pureComputed(function(){
+      return self.infoWinStatus.open;
+    });
+
     // Filter function for meetup list search
     self.search = ko.computed(function() {
       console.log('search:');
       meetupFilter = ko.utils.arrayFilter(self.groups(), function(group){
-        //do something
-        //console.log('doing something, group:', group);
-        //return group;
-
         //note: markers will not be available immediately because they have a timed delay instantiation. use setVisible only when it exists
         if (group.name.toLowerCase().indexOf(self.query().toLowerCase()) >= 0) {
             console.log('visible group.marker:', group.marker);
@@ -388,9 +398,6 @@
     getMeetups(); //get initial data
 
   } //end GroupsViewModel
-
-  //ko.applyBindings(new GroupsViewModel());
-
 
 })();
 

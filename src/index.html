@@ -1,8 +1,7 @@
 <!DOCTYPE html>
 <html>
-<!-- based on samples/map-control-positioning-labels/flex04.html and meetup/m04.html. investigate using ko template -->
   <head>
-    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta charset="utf-8">
     <title>FEND P5: Neighborhood Map</title>
     <link href='http://fonts.googleapis.com/css?family=Roboto+Condensed' rel='stylesheet' type='text/css'>
@@ -46,12 +45,7 @@
 
       <div class="container-list">
           <ul data-bind="visible: showGroups(), foreach: search">
-            <li data-bind="text:name, click: triggerMarker">
-              <!--
-              <img data-bind="attr: { src: urlThumb, title: name, alt: name }">
-              <p data-bind="text:name"></p>
-              -->
-            </li>
+            <li data-bind="text:name, css: {selected: $parent.isSelected}, click: triggerMarker"></li>
           </ul>
         </div>
   	</div> <!-- end container-data -->

@@ -38,8 +38,8 @@ gulp.task('scripts', function(){
 
 gulp.task('html', function(){
 	gulp.src(src.html)
-		.pipe(gulp.dest(dest.html))
-    .pipe(reload({stream: true}));
+		.pipe(gulp.dest(dest.html));
+    //.pipe(reload({stream: true}));
 });
 
 gulp.task('sass', function () {
