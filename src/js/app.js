@@ -362,14 +362,29 @@
     self.query = ko.observable('');
 
     // Filter function for meetup list search
-/*
     self.search = ko.computed(function() {
+      console.log('search:');
       meetupFilter = ko.utils.arrayFilter(self.groups(), function(group){
         //do something
+        //console.log('doing something, group:', group);
+        //return group;
 
+        //note: markers will not be available immediately because they have a timed delay instantiation. use setVisible only when it exists
+        if (group.name.toLowerCase().indexOf(self.query().toLowerCase()) >= 0) {
+            console.log('visible group.marker:', group.marker);
+            if (typeof group.marker !== 'undefined') group.marker.setVisible(true);
+            return group;
+        } else {
+          console.log('invisible group.marker:', group.marker);
+
+          if (typeof group.marker !== 'undefined') group.marker.setVisible(false);
+          infoWindow.close();
+        }
+
+      });
       return meetupFilter;
     });
-*/
+
     getMeetups(); //get initial data
 
   } //end GroupsViewModel

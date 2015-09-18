@@ -40,13 +40,12 @@
         </div>
         <div class="container-flex">
             <label>Filter:</label>
-            <input type="text" name="what" size="4" placeholder="by name" data-bind="value:query, valueUpdate:'keyup'">
+            <input type="text" name="what" size="4" placeholder="meetup by name" data-bind="value:query, valueUpdate:'keyup'">
         </div>
       </div>
 
       <div class="container-list">
-          <!-- <p>Curabitur arcu erat, accumsan id imperdiet et, porttitor at sem.</p> -->
-          <ul data-bind="visible: showGroups(), foreach: groups">
+          <ul data-bind="visible: showGroups(), foreach: search">
             <li data-bind="text:name, click: triggerMarker">
               <!--
               <img data-bind="attr: { src: urlThumb, title: name, alt: name }">
