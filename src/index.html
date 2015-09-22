@@ -45,10 +45,13 @@
 
       <div class="container-list">
           <ul data-bind="visible: showGroups(), foreach: search">
-            <li data-bind="text:name, css: {selected: $parent.isSelected}, click: triggerMarker"></li>
+            <li data-bind="text:name, attr: {id: id}, css: {selected: $data === $parent.meetupSelected()}, click: triggerMarker"></li>
+            <!-- <li data-bind="text:name, attr: {id: id}, css: $parent.meetupSelected, click: triggerMarker"></li> -->
           </ul>
         </div>
-  	</div> <!-- end container-data -->
+  	</div>
+    <!-- end container-data -->
+
     <div id="container-images">
       <div class="tab-images">
         <svg class="icon icon-circle-down"><use xlink:href="#icon-circle-down"></use></svg>

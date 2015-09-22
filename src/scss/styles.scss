@@ -317,6 +317,12 @@ input, textarea {
   @extend %clearfix;
 }
 
+/* TEMP ONLY! TO TEST */
+.container-list li.selected {
+  background: rgba(124, 179, 66, 1);
+}
+/* END TEMP ONLY! TO TEST */
+
 .container-list li:after {
   content: "";
   display: table;

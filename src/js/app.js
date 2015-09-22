@@ -38,7 +38,8 @@
       content: ''
     });
     google.maps.event.addListener(infoWindow,'closeclick',function(){
-      viewModel.infoWinStatus.open = false;
+      viewModel.meetupSelected(null);
+      console.log('closed infoWindow');
     });
     map = new google.maps.Map(mapDiv, mapOptions);
   }
@@ -138,8 +139,12 @@
   }
 
   function Group(data, ix) {
+    var prefix = 'm',
+    timeout = ix*200;
+
     this.name = data.name;
     this.city = data.city;
+    this.id = prefix + timeout; //assign id which is also a timeout value for adding markers
     //this.infoDisplayed = false;
 
     this.description = data.description; //ko.observable(data.description);
@@ -164,23 +169,20 @@
     this.strContent += '<div>'+this.description+'</div>';
 
     //make addMarker a prototype method of Group
-    this.addMarker(ix*200);
+    this.addMarker(prefix, timeout);
   }
 
   //can infoWindow be encapsulated in addMarker?
-  Group.prototype.addMarker = function(timeout) {
+  Group.prototype.addMarker = function(prefix, timeout) {
     //console.log('Group.prototype.addMarker, this:', this);
     //create content string for info window associated with this marker
-/*
-    var strContent = '<img src='+this.urlThumb+' title='+this.name+' alt='+this.name+'>';
-    strContent += '<h4>'+this.name+'</h4>';
-    strContent += '<div>'+this.description+'</div>';
-*/  var group = this;
+    var group = this;
     window.setTimeout(function() {
       group.marker = new google.maps.Marker({
         position: group.location,
         title: group.name,
         map: map,
+        mid: prefix+timeout, //assign an id to marker to coordinate with list selection hightlight
         animation: google.maps.Animation.DROP
       });
 
@@ -198,10 +200,16 @@
     }
   }
 
+  // NEED COMMENTS: I found that this will always be available and item and e will only be available when the li is clicked.
   Group.prototype.triggerMarker = function(item, e) {
     console.log('triggerMarker, this:', this);
-    //console.log('triggerMarker, e:', e);
+    console.log('triggerMarker, item:', item);
+    console.log('triggerMarker, e:', e);
+    //console.log('triggerMarker, this.marker.mid:', this.marker.mid);
     //e will be undefined when marker is clicked. may be used to target the li of the meetup list
+
+    viewModel.meetupSelected(this);
+    if (!e) document.getElementById(this.id).scrollIntoView();
 
     if (this.marker.getAnimation() !== null) {
       this.marker.setAnimation(null);
@@ -213,19 +221,11 @@
     map.panTo(this.location);
     infoWindow.setContent(this.strContent);
     infoWindow.open(map, this.marker);
-    viewModel.infoWinStatus.open = true;
   };
 
   Group.prototype.removeMarker = function() {
     this.marker.setMap(null);
   }
-/*
-  //Group.prototype.isSelected = viewModel.isSelected;
-  Group.prototype.isSelected = function() {
-    //return true when infoWindow is open and info displayed is of this particular group
-    return viewModel.infoWinStatus.open;
-  }
-*/
 
   function GroupsViewModel() {
     var self = this;
@@ -369,11 +369,7 @@
 
     self.query = ko.observable('');
 
-    self.infoWinStatus = {open:false};
-
-    self.isSelected = ko.pureComputed(function(){
-      return self.infoWinStatus.open;
-    });
+    self.meetupSelected = ko.observable();
 
     // Filter function for meetup list search
     self.search = ko.computed(function() {
