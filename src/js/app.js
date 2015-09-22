@@ -7,6 +7,29 @@
 
   var map, geocoder, viewModel, infoWindow, meetupFilter;
 
+  // return offsets in pixels to shift center of map based on panel size
+  function getOffsets() {
+    var containerData = document.getElementById('container-data'),
+        containerImages = document.getElementById('container-images'),
+        oX = (containerData.getBoundingClientRect().left >= 0) ? -containerData.clientWidth/2 : 0,
+        oY = (containerImages.getBoundingClientRect().height > 0) ? containerImages.clientHeight/2 : 0;
+
+    // console.log('containerData.getBoundingClientRect():', containerData.getBoundingClientRect());
+    // console.log('containerImages.getBoundingClientRect():', containerImages.getBoundingClientRect());
+    // console.log('offsetX, offsetY:', oX, oY);
+
+    return {offsetX:oX, offsetY:oY};
+  }
+
+  function getWidthInfoWin() {
+    var containerData = document.getElementById('container-data');
+    var oX = (containerData.getBoundingClientRect().left >= 0) ? containerData.clientWidth : 0;
+
+    var w = Math.max(document.documentElement.clientWidth, window.innerWidth); // + offsets.offsetX;
+    console.log('getWidthInfoWin, w, oX:', w, oX);
+    return w-oX-110; //subtract another 110 for a buffer so infoWindow doesn't overlap search tab
+  }
+
   //google map related functions
   function initialize() {
     //console.log('initialize');
@@ -16,12 +39,12 @@
       center: {lat: 44.963324, lng: -93.26832 }, //initial hard code for Minneapolis
       //disableDefaultUI: false
       panControl: false,
-      zoomControl: true,
+      zoomControl: false,  //true,
       zoomControlOptions: {
         style: google.maps.ZoomControlStyle.DEFAULT,
         position: google.maps.ControlPosition.RIGHT_TOP
       },
-      mapTypeControl: true,
+      mapTypeControl: false, //true,
       mapTypeControlOptions: {
         mapTypeIds: [google.maps.MapTypeId.ROADMAP, google.maps.MapTypeId.SATELLITE,
                      google.maps.MapTypeId.TERRAIN, google.maps.MapTypeId.HYBRID],
@@ -39,25 +62,13 @@
     });
     google.maps.event.addListener(infoWindow,'closeclick',function(){
       viewModel.meetupSelected(null);
-      console.log('closed infoWindow');
+      //console.log('closed infoWindow');
     });
     map = new google.maps.Map(mapDiv, mapOptions);
   }
 
   //page is fully loaded including graphics
   google.maps.event.addDomListener(window, 'load', initialize);
-
-  function geocodeAddress(address) {
-    //geocoder determines the lat/lng of address selected
-    geocoder.geocode({'address': address}, function(results, status) {
-      if (status === google.maps.GeocoderStatus.OK) {
-        map.setCenter(results[0].geometry.location);
-        map.setZoom(initialZoom);
-      } else {
-        alert('Geocode was not successful for the following reason: ' + status);
-      }
-    });
-  }
 
   window.addEventListener("load", function(e){
       //console.log("window.load, map:", map); //to show map is available at window.onload
@@ -219,9 +230,16 @@
     }
 
     map.panTo(this.location);
+    var offsets = getOffsets();
+    map.panBy(offsets.offsetX, offsets.offsetY);
+
+    // set appropriate width of infoWin here
+    infoWindow.setOptions({maxWidth:getWidthInfoWin()});
+
     infoWindow.setContent(this.strContent);
+    console.log('infoWindow:', infoWindow);
     infoWindow.open(map, this.marker);
-  };
+  }
 
   Group.prototype.removeMarker = function() {
     this.marker.setMap(null);
@@ -259,18 +277,18 @@
 
             self.toggleShowGroups();
 
-            //geocodeAddress(self.location());
             geocoder.geocode({'address': self.location()}, function(results, status) {
               if (status === google.maps.GeocoderStatus.OK) {
                 map.setCenter(results[0].geometry.location);
                 map.setZoom(initialZoom);
+                var o = getOffsets();
+                map.panBy(o.offsetX, o.offsetY);
                 getImages();
               } else {
                 alert('Geocode was not successful for the following reason: ' + status);
               }
             });
 
-            //getImages();
             clearTimeout(requestTimedout);
         },
         error: function(response) {
@@ -289,7 +307,6 @@
 
     var getImages = function() {
       $.ajax({
-        //url: "https://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=705d79e848f4e7dad9f9f119378b199f&lat="+map.getCenter().lat()+"&lon="+map.getCenter().lng()+"&per_page=20&tags="+self.location()+"&format=json&nojsoncallback=1",
         url: "https://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=705d79e848f4e7dad9f9f119378b199f&lat="+map.getCenter().lat()+"&lon="+map.getCenter().lng()+"&per_page=20&format=json&nojsoncallback=1",
 
         success: function(response) {
@@ -334,7 +351,7 @@
       }).always(function(response){
         //console.log('always, response:', response);
       });
-    }
+    };
 
     self.location = ko.observable(initialLocation);
     self.oldLocation = initialLocation;
@@ -375,7 +392,7 @@
     self.search = ko.computed(function() {
       console.log('search:');
       meetupFilter = ko.utils.arrayFilter(self.groups(), function(group){
-        //note: markers will not be available immediately because they have a timed delay instantiation. use setVisible only when it exists
+        //note: markers will not be available immediately because they have delayed instantiation. use setVisible only when it exists
         if (group.name.toLowerCase().indexOf(self.query().toLowerCase()) >= 0) {
             console.log('visible group.marker:', group.marker);
             if (typeof group.marker !== 'undefined') group.marker.setVisible(true);
