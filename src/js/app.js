@@ -7,6 +7,8 @@
 
   var map, geocoder, viewModel, infoWindow, meetupFilter;
 
+  var debug = true;
+
   // return offsets in pixels to shift center of map based on panel size
   function getOffsets() {
     var containerData = document.getElementById('container-data'),
@@ -94,20 +96,34 @@
     var sClassIconSearch = $iconSearch.attr('class'),
         sClassIconImages = $iconImages.attr('class');
 
+    if (debug) {
+      var $debug = $('#debug');
+      $debug.html('debug here.');
+    };
+
 
     $tabSearch.click(function(e){
       var toggleSearch, toggleIcon, extendRetract = '';
+
+      if (debug) {
+        var wPanel = '#container-data width: ' + $panelSearch.width(),
+            wContainerSearch = '.container-search width: ' + $panelSearch.find('.container-search').width(),
+            wContainerFlex = '.container-flex width: ' + $panelSearch.find('.container-flex').width(),
+            inputFlex = 'text input flex: ' + $($panelSearch.find('input')[0]).css('flex');
+
+        $debug.html(wPanel + '<br>' + wContainerSearch + '<br>' + wContainerFlex + '<br>' + inputFlex);
+      }
 
       //panel search may have a class of extend, retract or neither
       extendRetract += ($panelSearch.hasClass('extend')) ? ' extend' : '';
       extendRetract += ($panelSearch.hasClass('retract')) ? ' retract' : '';
 
       //first time in, panelSearch may not have a class
-      if ($panelSearch.hasClass('open')) {
-        toggleSearch = "close"+extendRetract;
+      if (!$panelSearch.attr('class') || $panelSearch.hasClass('slideInLeft')) {
+        toggleSearch = "slideOutLeft"+extendRetract;
         toggleIcon = sClassIconSearch+" rotate";
       } else {
-        toggleSearch = "open"+extendRetract;
+        toggleSearch = "slideInLeft"+extendRetract;
         toggleIcon = sClassIconSearch+" unrotate";
       }
 
@@ -213,9 +229,9 @@
 
   // NEED COMMENTS: I found that this will always be available and item and e will only be available when the li is clicked.
   Group.prototype.triggerMarker = function(item, e) {
-    console.log('triggerMarker, this:', this);
-    console.log('triggerMarker, item:', item);
-    console.log('triggerMarker, e:', e);
+    // console.log('triggerMarker, this:', this);
+    // console.log('triggerMarker, item:', item);
+    // console.log('triggerMarker, e:', e);
     //console.log('triggerMarker, this.marker.mid:', this.marker.mid);
     //e will be undefined when marker is clicked. may be used to target the li of the meetup list
 

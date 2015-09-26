@@ -45,6 +45,11 @@ input, textarea {
 
   // txt-light
   color: $color-panel;
+
+  //NOTE: mixin not sufficient for task here
+  //@include transition(transform 0.5s ease-in);
+  -webkit-transition: -webkit-transform 0.5s ease-in;
+  transition: transform 0.5s ease-in;
 }
 
 @include keyframes(extend) {
@@ -57,15 +62,12 @@ input, textarea {
   100% { bottom:30%; }
 }
 
-/* slide data panel left off viewport and back */
-#container-data.close {
-  @include transform(translate(-100%, 0));
-  @include transition(transform 0.5s ease-out);
+#container-data.slideOutLeft {
+   @include transform(translate3d(-100%, 0, 0));
 }
 
-#container-data.open {
-  @include transform(translate(0%, 0));
-  @include transition(transform 0.5s ease-in);
+#container-data.slideInLeft {
+   @include transform(translate3d(0, 0, 0));
 }
 
 /* animate data panel height (when images panel is resized) */
@@ -88,15 +90,40 @@ input, textarea {
   cursor: pointer;
 }
 
+@include keyframes(rotate) {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(180deg); }
+}
+
+@include keyframes(unrotate) {
+  0% { transform: rotate(180deg); }
+  100% { transform: rotate(0deg); }
+}
+
+.icon {
+  width:1em;
+  height:1em;
+  -webkit-transition: -webkit-transform 0.5s 0.5s;
+  transition: transform 0.5s 0.5s;
+}
+.icon-circle-left {
+  margin: .25em;
+}
+.icon-circle-down {
+  margin: 0;
+}
+.icon-target {
+  margin: .75em .25em 0 .5em;
+}
+
 /* animate icon to point in direction each panel will next slide to */
 .icon-circle-left.rotate, .icon-circle-down.rotate {
   @include transform(rotate(180deg));
-  @include transition(transform 0.5s 0.5s ease-in);
+
 }
 
 .icon-circle-left.unrotate, .icon-circle-down.unrotate {
   @include transform(rotate(0deg));
-  @include transition(transform 0.5s 0.5s ease-in);
 }
 
 //panel for images
@@ -221,6 +248,7 @@ input, textarea {
   justify-content: flex-start;
   align-content: flex-start;
   align-items: flex-start;
+  width: 100%;
 }
 
 .container-flex > label {
@@ -239,28 +267,13 @@ input, textarea {
   padding:.25em;
   margin: .5em 0 0 .25em;
 
-  flex: 1 1 38px;
+  /* max-width:38px; */ /* TODO: use media queries for this */
+
+  flex: 1 1 auto; //38px; //ios doesn't understand anything but auto for flex-basis
 }
 
-.container-list {
-  height:calc(100% - 8.5625em); /* 7.5625em is the height of .container-search */
-  overflow-y:auto;
-}
 .path1, .path2 {
   fill: $color-panel;
-}
-.icon {
-  width:1em;
-  height:1em;
-}
-.icon-circle-left {
-  margin: .25em;
-}
-.icon-circle-down {
-  margin: 0;
-}
-.icon-target {
-  margin: .75em .25em 0 .5em;
 }
 .btn-go {
   text-transform: uppercase;
@@ -302,6 +315,12 @@ input, textarea {
     margin-top: 100%;
 }
 /* end taken from http://output.jsbin.com/afAQAWA/2/ */
+
+.container-list {
+  height:calc(100% - 8.5625em); /* 7.5625em is the height of .container-search */
+  overflow-y:scroll; /* auto; */
+  -webkit-overflow-scrolling: touch;
+}
 
 .container-list ul {
   padding:0;
@@ -348,44 +367,24 @@ input, textarea {
   margin: 0 0 .5em 0;
   /* overflow:auto; */
   overflow-x: scroll;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
 }
-/*
-#slides {
-  //arbitrarily large width
-  height: calc(100% - 1.5em);
-  width:10000px;
-  //width: auto;
-  margin-top: 1em;
-  margin-bottom: .5em;
-}
-
-// here assume div only one level deep from .slides
-#slides img {
-  position:relative;
-  float: left;
-
-  margin:0;
-
-  border-top: 2px solid #000;
-  border-bottom: 2px solid #000;
-  border-left: 1px solid #000;
-  border-right: 1px solid #000;
-
-  max-height: calc(100%);
-  width:auto; // help IE/
-}
-*/
 
 #slides {
   display: flex;
   flex-flow: row nowrap;
   height: calc(100% - .25em); // - .5em);
 
+  white-space: nowrap; //help safari
+
   /* margin-bottom: .5em; */
 }
 
 // here assume div only one level deep from .slides
 #slides img {
+  display:inline-block; //help safari
+
   flex:0 0 auto;
   align-self: auto;
   margin:0;
@@ -416,3 +415,17 @@ input, textarea {
   /* bkg-scroll-thumb */
   background-color: $bkg-scroll-thumb;
 }
+
+/* info window */
+.gm-style-iw img {
+  /* control outsized images */
+  max-height: 150px;
+}
+
+.gm-style-iw > div {
+  /* a little space between text and scrollbar */
+  padding-right: 1rem;
+  /* ensure ios browsers scroll when needed */
+  -webkit-overflow-scrolling: touch;
+}
+

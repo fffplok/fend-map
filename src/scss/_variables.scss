@@ -41,6 +41,7 @@ $tab-radius: .5em .5em;
           transform-origin: $transform-origin;
 }
 
+/* danger, if any of $args need to be prefixed, they will not be */
 @mixin transition($args...) {
   -webkit-transition: $args;
   transition: $args;

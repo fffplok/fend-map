@@ -22,7 +22,7 @@
       </defs>
     </svg>
     <div id="map-canvas"></div>
-  	<div id="container-data" class="open">
+  	<div id="container-data">
 
       <div class="tab-search">
         <div class="rotated-text"><span class="rotated-text-inner">search</span></div>
@@ -33,13 +33,12 @@
         <h1>Find Meetups</h1>
         <div class="container-flex">
           <label>Near:</label>
-          <!-- size attribute required for firefox -->
-          <input type="text" name="where" size="4" placeholder="city" data-bind="textInput: location, event: {keyup: evalGoEnabled}">
+          <input type="text" name="where" placeholder="city" data-bind="textInput: location, event: {keyup: evalGoEnabled}">
           <button class="btn-go" data-bind="click: goLocation, enable:goIsEnabled">go</button>
         </div>
         <div class="container-flex">
             <label>Filter:</label>
-            <input type="text" name="what" size="4" placeholder="meetup by name" data-bind="value:query, valueUpdate:'keyup'">
+            <input type="text" name="what" placeholder="meetup by name" data-bind="value:query, valueUpdate:'keyup'">
         </div>
       </div>
 
@@ -63,6 +62,8 @@
         </div>
       </div>
     </div>
+
+    <div id="debug" style="position:absolute;top:0;left:35%;right:0;text-align:right"></div>
 
     <script src="https://maps.googleapis.com/maps/api/js?v=3.exp"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>

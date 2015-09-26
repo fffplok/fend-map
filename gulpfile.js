@@ -44,7 +44,8 @@ gulp.task('html', function(){
 
 gulp.task('sass', function () {
   gulp.src(src.css)
-    .pipe(sass({outputStyle: 'compressed'}).on('error', logError)) //sass.logError))
+    //.pipe(sass({outputStyle: 'compressed'}).on('error', logError)) //sass.logError))
+    .pipe(sass().on('error', logError))
     .pipe(rename('styles.min.css'))
     .pipe(gulp.dest(dest.css))
     .pipe(reload({stream: true}));
