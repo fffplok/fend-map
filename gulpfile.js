@@ -29,8 +29,8 @@ function logError(err) {
 
 gulp.task('scripts', function(){
 	gulp.src(src.js) //, {base: 'src'})
-	  .pipe(concat('all.js'))
-		.pipe(uglify())
+	  //.pipe(concat('all.js'))
+		//.pipe(uglify())
 		.pipe(rename('app.min.js'))
 		.pipe(gulp.dest(dest.js))
     .pipe(reload({stream: true}));

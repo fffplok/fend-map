@@ -24,7 +24,7 @@
     var oX = (containerData.getBoundingClientRect().left >= 0) ? containerData.clientWidth : 0;
 
     var w = Math.max(document.documentElement.clientWidth, window.innerWidth); // + offsets.offsetX;
-    console.log('getWidthInfoWin, w, oX:', w, oX);
+    //console.log('getWidthInfoWin, w, oX:', w, oX);
     return w-oX-110; //subtract another 110 for a buffer so infoWindow doesn't overlap search tab
   }
 
@@ -62,7 +62,7 @@
 
   //jQuery ready...
   $(function() {
-    console.log('jquery ready, map:', map); //map is not ready here.
+    //console.log('jquery ready, map:', map); //map is not ready here.
     //testing here for panel slides
 
     //get jquery objects for useful dom elements
@@ -233,7 +233,7 @@
     infoWindow.setOptions({maxWidth:getWidthInfoWin()});
 
     infoWindow.setContent(this.strContent);
-    console.log('infoWindow:', infoWindow);
+    //console.log('infoWindow:', infoWindow);
     infoWindow.open(map, this.marker);
   }
 
@@ -360,25 +360,20 @@
       self.showGroups(!self.showGroups());
     };
 
-    self.removeMarkers = function(){
-
-    };
-
-    self.goIsEnabled = ko.observable(false);
-    self.evalGoEnabled = function() {
-      console.log('self.location():', self.location());
-      self.goIsEnabled(self.location() !== self.oldLocation);
-
-      //return true to allow default action (keypress changes input value)
-      return true;
-    };
+    self.evalGoLocation = function(data, e) {
+      //when return is keyed into input-where, trigger goLocation
+      console.log('data, e.keyCode:', data, e.keyCode);
+      if (e.keyCode == 13) self.goLocation();
+    }
 
     self.goLocation = function() {
-      self.oldLocation = self.location();
-      //console.log('goLocation, self.oldLocation:', self.oldLocation);
-      self.evalGoEnabled();
-      self.toggleShowGroups();
-      getMeetups();
+      console.log('goLocation, self.oldLocation, self.location():', self.oldLocation, self.location());
+      //change location only if it has changed
+      if (self.oldLocation !== self.location()) {
+        self.oldLocation = self.location();
+        self.toggleShowGroups();
+        getMeetups();
+      }
     }
 
     self.query = ko.observable('');
@@ -387,15 +382,15 @@
 
     // Filter function for meetup list search
     self.search = ko.computed(function() {
-      console.log('search:');
+      //console.log('search:');
       meetupFilter = ko.utils.arrayFilter(self.groups(), function(group){
         //note: markers will not be available immediately because they have delayed instantiation. use setVisible only when it exists
         if (group.name.toLowerCase().indexOf(self.query().toLowerCase()) >= 0) {
-            console.log('visible group.marker:', group.marker);
+            //console.log('visible group.marker:', group.marker);
             if (typeof group.marker !== 'undefined') group.marker.setVisible(true);
             return group;
         } else {
-          console.log('invisible group.marker:', group.marker);
+          //console.log('invisible group.marker:', group.marker);
 
           if (typeof group.marker !== 'undefined') group.marker.setVisible(false);
           infoWindow.close();
