@@ -164,11 +164,9 @@
     }
 
     //a meetup group may not have group_photo. if not, show img not available
-    //this.urlThumb = (data.group_photo) ? ko.observable(data.group_photo.thumb_link) : "img/not_available.svg";
     this.urlThumb = (data.group_photo) ? data.group_photo.thumb_link : "img/not_available.svg";
 
     //group may not have photos
-    //this.photos = (data.photos) ? ko.observableArray(data.photos) : ko.observableArray([]);
     this.photos = (data.photos) ? data.photos : [];
 
     this.strContent = '<img src='+this.urlThumb+' title='+this.name+' alt='+this.name+'>';
@@ -350,7 +348,41 @@
       });
     };
 
-    self.location = ko.observable(initialLocation);
+    //use extender to make location input alphabetic
+    ko.extenders.filterInput = function(target, option) {
+      //create a writable computed observable to intercept writes to our observable
+      var result = ko.pureComputed({
+          read: target,  //always return the original observables value
+          write: function(newValue) {
+              var current = target(),
+                  //regex to eliminate any non-alphabetic chars
+                  valueToWrite = newValue.replace(/[~!@#$%^&*()_+=`?><.,:;|•¥¥€£'"\-\{\}\[\]\/\\^0-9]/, "");
+
+              //console.log('local var current, valueToWrite:', current, valueToWrite);
+
+              //only write if it changed
+              if (valueToWrite !== current) {
+                  target(valueToWrite);
+              }
+               else {
+                  //if the value is the same, but a different value was written, force a notification for the current field
+                  if (newValue !== current) {
+                      target.notifySubscribers(valueToWrite);
+                  }
+              }
+          }
+      }).extend({ notify: 'always' });
+
+      //initialize with current value to make sure it is filtered appropriately
+      result(target());
+
+      //return the new computed observable
+      return result;
+
+    }
+
+    //self.location = ko.observable(initialLocation); //ORIG
+    self.location = ko.observable(initialLocation).extend({filterInput: 0});
     self.oldLocation = initialLocation;
     self.groups = ko.observableArray([]);
     self.images = ko.observableArray([]);
@@ -362,15 +394,22 @@
 
     self.evalGoLocation = function(data, e) {
       //when return is keyed into input-where, trigger goLocation
-      console.log('data, e.keyCode:', data, e.keyCode);
+      //console.log('data, e.keyCode:', data, e.keyCode);
       if (e.keyCode == 13) self.goLocation();
     }
 
     self.goLocation = function() {
       console.log('goLocation, self.oldLocation, self.location():', self.oldLocation, self.location());
-      //change location only if it has changed
-      if (self.oldLocation !== self.location()) {
-        self.oldLocation = self.location();
+      //change location only if it has changed and is not empty
+/*
+      //first grep to only accept alphanumeric and spaces in self.location()
+      var str = ko.utils.unwrapObservable(self.location);
+      var greppedLoc = /[a-z0-9-]+/.exec(str);
+      console.log('str, greppedLoc:',str, greppedLoc);
+*/
+      var selfLoc = self.location();
+      if (selfLoc !== '' && self.oldLocation !== selfLoc) {
+        self.oldLocation = selfLoc;
         self.toggleShowGroups();
         getMeetups();
       }
