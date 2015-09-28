@@ -16,10 +16,6 @@
         oX = (containerData.getBoundingClientRect().left >= 0) ? -containerData.clientWidth/2 : 0,
         oY = (containerImages.getBoundingClientRect().height > 0) ? containerImages.clientHeight/2 : 0;
 
-    // console.log('containerData.getBoundingClientRect():', containerData.getBoundingClientRect());
-    // console.log('containerImages.getBoundingClientRect():', containerImages.getBoundingClientRect());
-    // console.log('offsetX, offsetY:', oX, oY);
-
     return {offsetX:oX, offsetY:oY};
   }
 
@@ -39,23 +35,7 @@
     var mapOptions = {
       zoom: initialZoom,
       center: {lat: 44.963324, lng: -93.26832 }, //initial hard code for Minneapolis
-      //disableDefaultUI: false
-      panControl: false,
-      zoomControl: false,  //true,
-      zoomControlOptions: {
-        style: google.maps.ZoomControlStyle.DEFAULT,
-        position: google.maps.ControlPosition.RIGHT_TOP
-      },
-      mapTypeControl: false, //true,
-      mapTypeControlOptions: {
-        mapTypeIds: [google.maps.MapTypeId.ROADMAP, google.maps.MapTypeId.SATELLITE,
-                     google.maps.MapTypeId.TERRAIN, google.maps.MapTypeId.HYBRID],
-        style: google.maps.MapTypeControlStyle.DEFAULT,
-        position: google.maps.ControlPosition.TOP_RIGHT
-      },
-      scaleControl: false,
-      streetViewControl: false,
-      overviewMapControl: false
+      disableDefaultUI: true
     };
 
     geocoder = new google.maps.Geocoder();
@@ -88,10 +68,10 @@
     //get jquery objects for useful dom elements
     var $panelSearch = $('#container-data'),
         $panelImages = $('#container-images'),
-        $tabSearch = $($panelSearch.find('.tab-search')[0]), //$('.tab-search')[0],
-        $tabImages = $($panelImages.find('.tab-images')[0]), //$('.tab-images')[0],
-        $iconSearch = $($panelSearch.find('.icon-circle-left')[0]), //$('.icon-circle-left')[0],
-        $iconImages = $($panelImages.find('.icon-circle-down')[0]); //$('.icon-circle-down')[0];
+        $tabSearch = $($panelSearch.find('.tab-search')[0]),
+        $tabImages = $($panelImages.find('.tab-images')[0]),
+        $iconSearch = $($panelSearch.find('.icon-circle-left')[0]),
+        $iconImages = $($panelImages.find('.icon-circle-down')[0]);
 
     var sClassIconSearch = $iconSearch.attr('class'),
         sClassIconImages = $iconImages.attr('class');
@@ -281,6 +261,7 @@
 
             //console.log('getMeetups before mapping, self.groups().length:', self.groups().length);
             //do cleanup here before mapping a new set of groups
+            //think about .hasMutated to manipulate underlying array without touching the observable to prevent ui updates every time groups is updated.
             if (self.groups().length > 0) {
               //remove markers, de-reference group objects so they may be garbage collected
               while (self.groups().length > 0) {

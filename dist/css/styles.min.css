@@ -27,6 +27,31 @@ input:focus, textarea:focus {
 input, textarea {
   color: #ffd54f; }
 
+/* a stab at viewing windows phone emulation in ie11. see https://msdn.microsoft.com/en-us/library/ie/hh869615(v=vs.85).aspx */
+@media screen and (orientation: landscape) {
+  @-ms-viewport {
+    width: 1024px;
+    height: 768px; } }
+
+@media screen and (orientation: portrait) {
+  @-ms-viewport {
+    width: 768px;
+    height: 1024px; } }
+
+/* for small viewports and when flex-basis with px not supported (ios browsers) we need to set width of input-where */
+/* iphone 6 plus 414x736*/
+@media screen and (orientation: portrait) and (max-width: 414px) {
+  .input-where {
+    width: 35%; }
+  .input-what {
+    width: 60%; } }
+
+@media screen and (orientation: landscape) and (max-height: 414px) {
+  .input-where {
+    width: 50%; }
+  .input-what {
+    width: 70%; } }
+
 #container-data {
   position: absolute;
   background: rgba(66, 66, 66, 0.8);
@@ -256,7 +281,7 @@ input, textarea {
   margin: 0.5em 0 0 0.25em;
   /* max-width:38px; */
   /* TODO: use media queries for this */
-  flex: 1 1 auto; }
+  flex: 1 1 38px; }
 
 .path1, .path2 {
   fill: #ffd54f; }

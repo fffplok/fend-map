@@ -27,6 +27,41 @@ input, textarea {
   color:$color-panel;
 }
 
+/* a stab at viewing windows phone emulation in ie11. see https://msdn.microsoft.com/en-us/library/ie/hh869615(v=vs.85).aspx */
+@media screen and (orientation: landscape) {
+  @-ms-viewport {
+    width: 1024px;
+    height: 768px;
+  }
+}
+
+@media screen and (orientation: portrait) {
+  @-ms-viewport {
+    width: 768px;
+    height: 1024px;
+  }
+}
+
+/* for small viewports and when flex-basis with px not supported (ios browsers) we need to set width of input-where */
+/* iphone 6 plus 414x736*/
+@media screen and (orientation: portrait) and (max-width:414px) {
+  .input-where {
+    width:35%;
+  }
+  .input-what {
+    width:60%;
+  }
+}
+
+@media screen and (orientation: landscape) and (max-height:414px) {
+  .input-where {
+    width:50%;
+  }
+  .input-what {
+    width:70%;
+  }
+}
+
 //panel for list
 #container-data {
 	position:absolute;
@@ -269,7 +304,7 @@ input, textarea {
 
   /* max-width:38px; */ /* TODO: use media queries for this */
 
-  flex: 1 1 auto; //38px; //ios doesn't understand anything but auto for flex-basis
+  flex: 1 1 38px; //38px; //ios doesn't understand anything but auto for flex-basis, so added media query for small handheld to control input width
 }
 
 .path1, .path2 {
