@@ -7,7 +7,20 @@
 
   var map, geocoder, viewModel, infoWindow, meetupFilter;
 
-  var debug = true;
+  var $debug,
+      debug = true;
+
+  //tracks always event of ajax calls
+  function evalResults(msg) {
+    notify(msg);
+  }
+
+  //post status info to user
+  function notify(msg) {
+    //for now, just append messages
+    var html = $debug.html();
+    $debug.html(html + msg);
+  }
 
   // return offsets in pixels to shift center of map based on panel size
   function getOffsets() {
@@ -77,7 +90,7 @@
         sClassIconImages = $iconImages.attr('class');
 
     if (debug) {
-      var $debug = $('#debug');
+      $debug = $('#debug');
       $debug.html('debug here.');
     };
 
@@ -281,6 +294,7 @@
                 getImages();
               } else {
                 alert('Geocode was not successful for the following reason: ' + status);
+                notify('Geocode was not successful for the following reason: ' + status);
               }
             });
 
@@ -296,7 +310,7 @@
       }).always(function(response){
           //console.log('always, response:', response);
           //console.log('always, self.groups.length:', self.groups().length);
-
+          evalResults('meetup response:', response);
       });
     }
 
@@ -340,11 +354,12 @@
           console.log('error:', response);
         }
       }).done(function(response){
-        //console.log('done, response:', response);
+        console.log('done, response:', response);
       }).fail(function(response){
         console.log('fail, response:', response);
       }).always(function(response){
-        //console.log('always, response:', response);
+        console.log('always, response:', response);
+        evalResults('image response:', response);
       });
     };
 
