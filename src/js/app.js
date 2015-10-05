@@ -222,7 +222,7 @@
   Group.prototype.triggerMarker = function(item, e) {
     // console.log('triggerMarker, this:', this);
     // console.log('triggerMarker, item:', item);
-    // console.log('triggerMarker, e:', e);
+     console.log('triggerMarker, e:', e);
     //console.log('triggerMarker, this.marker.mid:', this.marker.mid);
     //e will be undefined when marker is clicked. may be used to target the li of the meetup list
 
@@ -271,14 +271,17 @@
             console.log('getMeetups success, self.location(), response.data:', self.location(), response.data);
 
             //console.log('getMeetups before mapping, self.groups().length:', self.groups().length);
+
             //do cleanup here before mapping a new set of groups
-            //think about .hasMutated to manipulate underlying array without touching the observable to prevent ui updates every time groups is updated.
-            if (self.groups().length > 0) {
-              //remove markers, de-reference group objects so they may be garbage collected
-              while (self.groups().length > 0) {
-                self.groups().shift().removeMarker();
+            //manipulate underlying array without touching the observable to prevent ui updates every time groups is updated. use valueHasMutated to trigger update.
+            var arrGroups = self.groups();
+            if (arrGroups.length > 0) {
+              while (arrGroups.length > 0) {
+                arrGroups.shift().removeMarker();
               }
+              self.groups.valueHasMutated();
             }
+
             var mappedGroups = $.map(response.data, function(item, ix) { return new Group(item, ix) });
             self.groups(mappedGroups);
             //console.log('getMeetups after mapping, self.groups().length:', self.groups().length);
@@ -330,11 +333,12 @@
             var $slides = $('#slides');
 
             //do cleanup here before mapping a new set of groups
-            //self.images = [];
-            if (self.images().length > 0) {
-              while (self.images().length > 0) {
-                self.images().shift();
+            var arrImages = self.images();
+            if (arrImages.length > 0) {
+              while (arrImages.length > 0) {
+                arrImages.shift();
               }
+              self.images.valueHasMutated();
             }
 
             var mappedImages = $.map(response.photos.photo, function(item) {
@@ -445,9 +449,10 @@
             return group;
         } else {
           //console.log('invisible group.marker:', group.marker);
-
           if (typeof group.marker !== 'undefined') group.marker.setVisible(false);
+          //close infoWindow if open and ensure no meetup is selected
           infoWindow.close();
+          self.meetupSelected(null);
         }
 
       });
