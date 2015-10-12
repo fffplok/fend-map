@@ -43,7 +43,7 @@
       </div>
 
       <div class="container-list">
-          <ul data-bind="visible: showGroups(), foreach: search">
+          <ul data-bind="visible: showGroups(), foreach: search" style="display:none;">
             <li data-bind="text:name, attr: {id: id}, css: {selected: $data === $parent.meetupSelected()}, click: triggerMarker"></li>
           </ul>
         </div>
@@ -55,14 +55,16 @@
         <svg class="icon icon-circle-down"><use xlink:href="#icon-circle-down"></use></svg>
         <span>images</span>
       </div>
+
       <div class="container-slides">
-        <div id="slides" data-bind="foreach:images">
+        <div id="slides" data-bind="visible: showImages(), foreach:images">
           <img data-bind="attr: { src:src, title:title }">
         </div>
       </div>
+
     </div>
 
-    <div id="debug" style="position:absolute;top:0;left:35%;right:0;text-align:right"></div>
+    <div id="debug" style="position:absolute;top:0;left:38%;right:0;text-align:right"></div>
 
     <script src="https://maps.googleapis.com/maps/api/js?v=3.exp"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>

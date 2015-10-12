@@ -29,7 +29,7 @@ function logError(err) {
 
 gulp.task('scripts', function(){
 	gulp.src(src.js) //, {base: 'src'})
-	  //.pipe(concat('all.js'))
+	  .pipe(concat('all.js'))
 		//.pipe(uglify())
 		.pipe(rename('app.min.js'))
 		.pipe(gulp.dest(dest.js))
