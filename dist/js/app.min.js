@@ -62,7 +62,6 @@
   }
 
   function initialize() {
-    console.log('initialize');
     geocoder = new google.maps.Geocoder();
 
     modelLocation = new ModelLocation();
@@ -70,10 +69,10 @@
     //create a promise that gets a geocode and here place the then code
     getMapCenter(initialLocation).then(function(result) {
       modelLocation.mapCenter(result);
-      console.log('got result:', result);
-      //console.log('modelLocation:', modelLocation);
-      console.log('modelLocation.strLoc():', modelLocation.strLoc());
-      console.log('modelLocation.mapCenter():', modelLocation.mapCenter());
+      console.log('initialize getMapCenter promise, got result:', result);
+      console.log('  modelLocation.strLoc():', modelLocation.strLoc());
+      console.log('  modelLocation.mapCenter().lat():', modelLocation.mapCenter().lat());
+      console.log('  modelLocation.mapCenter().lng():', modelLocation.mapCenter().lng());
       var mapDiv = document.getElementById('map-canvas');
       var mapOptions = {
         zoom: initialZoom,
@@ -127,6 +126,10 @@
       dataType: "jsonp", // Tell jQuery we're expecting JSONP
       success: function(response) {
           //console.log('getMeetups success, strLoc, response.data:', strLoc, response.data);
+          console.log('***getMeetups success***');
+          console.log('  modelLocation.strLoc():', modelLocation.strLoc());
+          console.log('  modelLocation.mapCenter().lat():', modelLocation.mapCenter().lat());
+          console.log('  modelLocation.mapCenter().lng():', modelLocation.mapCenter().lng());
           groupsViewModel.meetupsSuccess(response.data);
 
           clearTimeout(requestTimedout);
@@ -137,10 +140,9 @@
     }).done(function(response){
         //console.log('done, response:', response);
     }).fail(function(response){
-        console.log('fail, response:', response);
+        console.log('getMeetups fail, response:', response);
     }).always(function(response){
-        console.log('getMeetups always, response:', response);
-        //console.log('always, self.groups.length:', self.groups().length);
+        //console.log('getMeetups always, response:', response);
         evalResults('<br>getMeetups always response:'+response);
     });
   }
@@ -149,53 +151,27 @@
     //TODO: 10.6 - first determine whether map.getCenter() returns an object. if so then then use map.getCenter().lat(), etc.
     $.ajax({
       //url: "https://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=705d79e848f4e7dad9f9f119378b199f&lat="+map.getCenter().lat()+"&lon="+map.getCenter().lng()+"&per_page=20&format=json&nojsoncallback=1",
-      url: "https://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=705d79e848f4e7dad9f9f119378b199f&lat="+modelLocation.mapCenter().J+"&lon="+modelLocation.mapCenter().M+"&per_page=20&format=json&nojsoncallback=1",
+      url: "https://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=705d79e848f4e7dad9f9f119378b199f&lat="+modelLocation.mapCenter().lat()+"&lon="+modelLocation.mapCenter().lng()+"&per_page=20&format=json&nojsoncallback=1",
 
       success: function(response) {
-        //console.log('map.getCenter():', map.getCenter());
-        console.log('getImages success, response:', response);
+        //console.log('getImages success, response:', response);
+        console.log('***getImages success***');
+        console.log('  modelLocation.strLoc():', modelLocation.strLoc());
+        console.log('  modelLocation.mapCenter().lat():', modelLocation.mapCenter().lat());
+        console.log('  modelLocation.mapCenter().lng():', modelLocation.mapCenter().lng());
 
         imagesViewModel.imagesSuccess(response);
-/*
-        if (response.stat === 'ok') {
-          //var images = [],
-          //var links = [],
-          //    i = 0;
-
-          var $slides = $('#slides');
-
-          //do cleanup here before mapping a new set of groups
-          var arrImages = self.images();
-          if (arrImages.length > 0) {
-            while (arrImages.length > 0) {
-              arrImages.shift();
-            }
-            self.images.valueHasMutated();
-          }
-
-          var mappedImages = $.map(response.photos.photo, function(item) {
-            return new ImgInfo(item);
-          });
-          self.images(mappedImages);
-
-          self.toggleShowImages(); //really doesn't have much effect
-          //TODO: if no photo found, indicate this
-
-          //console.log('images:',self.images);
-          //console.log('images:',self.images());
-        }
-*/
         //clearTimeout(requestTimedout);
       },
       error: function(response) {
         console.log('error:', response);
       }
     }).done(function(response){
-      console.log('done, response:', response);
+      console.log('getImages done, response:', response);
     }).fail(function(response){
-      console.log('fail, response:', response);
+      console.log('getImages fail, response:', response);
     }).always(function(response){
-      console.log('always, response:', response);
+      //console.log('getImages always, response:', response);
       evalResults('image response:', response);
     });
   };
@@ -203,7 +179,7 @@
 
   //jQuery ready...
   $(function() {
-    console.log('jquery ready, map:', map); //map is not ready here.
+    //console.log('jquery ready, map:', map); //map is not ready here.
     //testing here for panel slides
 
     //get jquery objects for useful dom elements
@@ -287,6 +263,7 @@
 
     self.imagesSuccess = function(response) {
       console.log('ImagesViewModel.imagesSuccess, response:', response);
+      console.log('  self.showImages():', self.showImages());
       if (response.stat === 'ok') {
 
         //do cleanup here before mapping a new set of images
@@ -303,17 +280,25 @@
         });
         self.images(mappedImages);
 
-        self.toggleShowImages(); //really doesn't have much effect
+        //expand images panel if it were minimized
+        //if (self.showImages()) $tabImages.click();
+
+        //self.toggleShowImages(); //really doesn't have much effect
         //TODO: if no photo found, indicate this
         //console.log('images:',self.images);
         //console.log('images:',self.images());
       }
     }
 
-    self.showImages = ko.observable(false);
+    self.showImages = ko.observable(true);
     self.toggleShowImages = function() {
       self.showImages(!self.showImages());
     };
+
+    //TEMP: to show binding
+    self.tabClick = function(context, e) {
+      console.log('ImagesViewModel.tabClick, context, e:', context, e);
+    }
 
   } //end ImagesViewModel
 
@@ -412,12 +397,20 @@
         self.toggleShowGroups();
         //not real happy about calling the other viewModel from here
         // for that matter, the goLocation could be more abstract and be put in its own view model
-        imagesViewModel.toggleShowImages();
+        //imagesViewModel.toggleShowImages();
 
         //be sure to get geo coords before we get images (TO DO: see how we can refactor getMeetups)
         getMapCenter(self.location()).then(function(result) {
-          console.log('goLocation, getMapCenter result:', result);
+          console.log('***goLocation***');
+          console.log('  getMapCenter result:', result);
+          //update location model with change
           modelLocation.mapCenter(result);
+
+          //prepare ui for change in location
+          self.query('');
+          console.log('  showImages():')
+
+          //get the meetups and images
           getMeetups();
           getImages();
         }, function(err) {
@@ -528,7 +521,7 @@
   Group.prototype.triggerMarker = function(item, e) {
     // console.log('triggerMarker, this:', this);
     // console.log('triggerMarker, item:', item);
-     console.log('triggerMarker, e:', e);
+    //console.log('triggerMarker, e:', e);
     //console.log('triggerMarker, this.marker.mid:', this.marker.mid);
     //e will be undefined when marker is clicked. may be used to target the li of the meetup list
 
