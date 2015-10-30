@@ -1,5 +1,4 @@
 /* and mixins */
-/* danger, if any of $args need to be prefixed, they will not be */
 /* extension. note just using :after here -- didn't work */
 .container-list li:after {
   content: "";
@@ -27,7 +26,19 @@ input:focus, textarea:focus {
 input, textarea {
   color: #ffd54f; }
 
-/* a stab at viewing windows phone emulation in ie11. see https://msdn.microsoft.com/en-us/library/ie/hh869615(v=vs.85).aspx */
+/* scrollbar customization for webkit browsers */
+::-webkit-scrollbar {
+  -webkit-appearance: none;
+  width: 10px;
+  height: 10px; }
+
+::-webkit-scrollbar-thumb {
+  background-color: #424242; }
+
+/*
+ * a stab at viewing windows phone emulation in ie11.
+ * see https://msdn.microsoft.com/en-us/library/ie/hh869615(v=vs.85).aspx
+ */
 @media screen and (orientation: landscape) {
   @-ms-viewport {
     width: 1024px;
@@ -38,8 +49,12 @@ input, textarea {
     width: 768px;
     height: 1024px; } }
 
-/* for small viewports and when flex-basis with px not supported (ios browsers) we need to set width of input-where */
-/* iphone 6 plus 414x736*/
+/*
+ * for small viewports and when flex-basis with px not supported (ios browsers)
+ * we need to set width of input-where
+ *
+ * iphone 6 plus 414x736
+ */
 @media screen and (orientation: portrait) and (max-width: 414px) {
   .input-where {
     width: 35%; }
@@ -52,15 +67,66 @@ input, textarea {
   .input-what {
     width: 70%; } }
 
+.message {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  color: #cccccc; }
+
+#container-map-message {
+  position: absolute;
+  top: 20%;
+  right: 10%;
+  bottom: 55%;
+  left: 50%;
+  background-color: rgba(66, 66, 66, 0.85);
+  color: #cccccc;
+  padding: 0.5em 1em 1em 1em;
+  border-radius: 0.5em 0.5em; }
+
+@-webkit-keyframes fadeOut {
+  0% {
+    opacity: 100%; }
+  100% {
+    opacity: 0; } }
+
+@keyframes fadeOut {
+  0% {
+    opacity: 100%; }
+  100% {
+    opacity: 0; } }
+
+@-webkit-keyframes fadeIn {
+  0% {
+    opacity: 0; }
+  100% {
+    opacity: 100%; } }
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0; }
+  100% {
+    opacity: 100%; } }
+
+#container-map-message.fadeOut {
+  -webkit-animation: fadeOut 0.5s ease-out forwards;
+  animation: fadeOut 0.5s ease-out forwards; }
+
+#container-map-message.fadeIn {
+  -webkit-animation: fadeIn 0.5s ease-out forwards;
+  animation: fadeIn 0.5s ease-out forwards; }
+
 #container-data {
   position: absolute;
-  background: rgba(66, 66, 66, 0.8);
+  background-color: rgba(66, 66, 66, 0.85);
   top: 0;
   left: 0;
+  bottom: 30%;
   min-width: 150px;
   max-width: 35%;
   width: 35%;
-  bottom: 30%;
   padding: 0 0.5em;
   color: #ffd54f;
   -webkit-transition: -webkit-transform 0.5s ease-in;
@@ -110,7 +176,7 @@ input, textarea {
 .tab-search {
   position: absolute;
   left: 100%;
-  background: rgba(66, 66, 66, 0.8);
+  background-color: rgba(66, 66, 66, 0.85);
   border-bottom-right-radius: 0.5em 0.5em;
   cursor: pointer; }
 
@@ -144,14 +210,14 @@ input, textarea {
   -webkit-transition: -webkit-transform 0.5s 0.5s;
   transition: transform 0.5s 0.5s; }
 
-.icon-circle-left {
+.icon-circle-left, .icon-alert {
   margin: .25em; }
 
 .icon-circle-down {
   margin: 0; }
 
-.icon-target {
-  margin: 0.75em 0.25em 0 0.5em; }
+.icon-alert {
+  color: #cccccc; }
 
 /* animate icon to point in direction each panel will next slide to */
 .icon-circle-left.rotate, .icon-circle-down.rotate {
@@ -162,14 +228,20 @@ input, textarea {
   -webkit-transform: rotate(0deg);
   transform: rotate(0deg); }
 
+#container-data .message {
+  z-index: -1; }
+
 #container-images {
   position: absolute;
   top: 70%;
   left: 0;
   right: 0;
   bottom: 32px;
-  background: rgba(66, 66, 66, 0.8);
+  background-color: rgba(66, 66, 66, 0.85);
   color: #ffd54f; }
+
+#container-images .message {
+  margin: 1em; }
 
 #container-images.close {
   -webkit-animation: shrink 0.5s ease-out forwards;
@@ -209,13 +281,23 @@ input, textarea {
     top: 70%; } }
 
 /*
-  ie cannot understand the calc in @keyframes:
-  more generally, transforms: https://connect.microsoft.com/IE/feedback/details/814380/
-  ie10+ no longer supports conditional css so use media query hack:
-  https://philipnewcomer.net/2014/04/target-internet-explorer-10-11-css/
-*/
+ * ie (also edge) cannot understand the calc in @keyframes:
+ * more generally, transforms: https://connect.microsoft.com/IE/feedback/details/814380/
+ * ie10+ no longer supports conditional css so use media query hack:
+ * https://philipnewcomer.net/2014/04/target-internet-explorer-10-11-css/
+ */
 @media all and (-ms-high-contrast: none), (-ms-high-contrast: active) {
   /* IE10+ CSS styles go here */
+  #container-images.close {
+    animation: msshrink 0.5s ease-out forwards; }
+  #container-images.open {
+    animation: msunshrink 0.5s ease-in forwards; } }
+
+/*
+ * Edge browser supports feature detection
+ * https://jeffclayton.wordpress.com/2015/04/07/css-hacks-for-windows-10-and-spartan-browser-preview/
+ */
+@supports (-ms-accelerator: true) {
   #container-images.close {
     animation: msshrink 0.5s ease-out forwards; }
   #container-images.open {
@@ -238,7 +320,7 @@ input, textarea {
   height: 1.5em;
   top: -1.5em;
   right: 0;
-  background: rgba(66, 66, 66, 0.8);
+  background-color: rgba(66, 66, 66, 0.85);
   cursor: pointer;
   padding: 0.25em 0.5em;
   border-top-left-radius: 0.5em 0.5em; }
@@ -279,31 +361,36 @@ input, textarea {
   /* padding and margin same for label */
   padding: .25em;
   margin: 0.5em 0 0 0.25em;
-  /* max-width:38px; */
-  /* TODO: use media queries for this */
+  /* ios understands only auto for flex-basis, so added media query for small handheld to control input width */
   flex: 1 1 38px; }
 
 .path1, .path2 {
   fill: #ffd54f; }
 
+.path3 {
+  fill: #cccccc; }
+
 .btn-go {
   text-transform: uppercase;
   text-align: center;
+  /*
+   * 1.6875em makes button height equal to text input height at 16px font size,
+   * at 18px font size, it's just less than a pixel shorter
+   */
   width: 1.6875em;
-  /* 1.6875em makes button height equal to text input height at 16px font size, at 18px font size, it's just less than a pixel shorter */
   height: 1.6875em;
   border: none;
   margin: 0.5em 0 0 0.5em;
   padding: 0;
-  background: #76ff03; }
+  background-color: #7cb342;
+  color: #424242; }
 
 /* modified from http://output.jsbin.com/afAQAWA/2/ */
 .rotated-text {
   margin: 0;
   display: inline-block;
   overflow: hidden;
-  width: 1.5em;
-  top: 2em; }
+  width: 1.5em; }
 
 .rotated-text-inner {
   display: inline-block;
@@ -321,12 +408,13 @@ input, textarea {
   float: left;
   margin-top: 100%; }
 
-/* end taken from http://output.jsbin.com/afAQAWA/2/ */
+/* end modified from http://output.jsbin.com/afAQAWA/2/ */
 .container-list {
+  position: relative;
+  z-index: 1;
   height: calc(100% - 8.5625em);
   /* 7.5625em is the height of .container-search */
   overflow-y: scroll;
-  /* auto; */
   -webkit-overflow-scrolling: touch; }
 
 .container-list ul {
@@ -337,14 +425,13 @@ input, textarea {
 .container-list li {
   padding: 0.5em 1em;
   margin: 0 0.5em 2px 0.5em;
-  background: rgba(124, 179, 66, 0.75);
+  background-color: rgba(104, 159, 56, 0.8);
   cursor: pointer; }
 
-/* TEMP ONLY! TO TEST */
 .container-list li.selected {
-  background: #7cb342; }
+  background-color: #7cb342;
+  color: #424242; }
 
-/* END TEMP ONLY! TO TEST */
 .container-list li:after {
   content: "";
   display: table;
@@ -356,27 +443,25 @@ input, textarea {
   max-height: 60px;
   margin-right: 1em; }
 
-/* .slides is a div that can be scrolled left/right and contains images all of the same height */
-/* NB: dummying this up, it seems that flex is not what I want. */
 .container-slides {
   position: absolute;
   top: 0;
   bottom: 0;
   left: 0;
   right: 0;
-  /* margin: 0 .5em .5em .5em; */
-  margin: 0 0 0.5em 0;
-  /* overflow:auto; */
+  margin: 0 0 4px 0;
   overflow-x: scroll;
   overflow-y: hidden;
   -webkit-overflow-scrolling: touch; }
 
+/* #slides is a div that can be scrolled left/right and contains images all of the same height */
 #slides {
+  position: relative;
   display: flex;
   flex-flow: row nowrap;
   height: calc(100% - .25em);
-  white-space: nowrap;
-  /* margin-bottom: .5em; */ }
+  z-index: 2;
+  white-space: nowrap; }
 
 #slides img {
   display: inline-block;
@@ -384,7 +469,6 @@ input, textarea {
   align-self: auto;
   margin: 0;
   border-top: 4px solid transparent;
-  /* border-bottom: 2px solid rgba(0, 0, 0, 0); */
   border-left: 1px solid transparent;
   border-right: 1px solid transparent;
   max-height: calc(100%);
@@ -395,17 +479,6 @@ input, textarea {
 
 #slides img:last-child {
   border-right-width: 2px; }
-
-::-webkit-scrollbar {
-  -webkit-appearance: none;
-  width: .5rem;
-  /*7px;*/
-  height: .5rem;
-  /*7px;*/ }
-
-::-webkit-scrollbar-thumb {
-  /* bkg-scroll-thumb */
-  background-color: rgba(66, 66, 66, 0.8); }
 
 /* info window */
 .gm-style-iw img {

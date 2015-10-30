@@ -3,6 +3,7 @@
 * {
   box-sizing:border-box;
 }
+
 html {
   /* Prevent font scaling in landscape while allowing user zoom */
   -webkit-text-size-adjust: 100%;
@@ -23,11 +24,24 @@ input:focus, textarea:focus {
 }
 
 input, textarea {
-	//txt-light
   color:$color-panel;
 }
 
-/* a stab at viewing windows phone emulation in ie11. see https://msdn.microsoft.com/en-us/library/ie/hh869615(v=vs.85).aspx */
+/* scrollbar customization for webkit browsers */
+::-webkit-scrollbar {
+  -webkit-appearance: none;
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: $bkg-scroll-thumb;
+}
+
+/*
+ * a stab at viewing windows phone emulation in ie11.
+ * see https://msdn.microsoft.com/en-us/library/ie/hh869615(v=vs.85).aspx
+ */
 @media screen and (orientation: landscape) {
   @-ms-viewport {
     width: 1024px;
@@ -42,8 +56,12 @@ input, textarea {
   }
 }
 
-/* for small viewports and when flex-basis with px not supported (ios browsers) we need to set width of input-where */
-/* iphone 6 plus 414x736*/
+/*
+ * for small viewports and when flex-basis with px not supported (ios browsers)
+ * we need to set width of input-where
+ *
+ * iphone 6 plus 414x736
+ */
 @media screen and (orientation: portrait) and (max-width:414px) {
   .input-where {
     width:35%;
@@ -62,27 +80,68 @@ input, textarea {
   }
 }
 
+.message {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  color: $color-message;
+}
+
+//panel for map cannot load message///////////////////////////
+#container-map-message {
+  position:absolute;
+
+  top: 20%;
+  right: 10%;
+  bottom: 55%;
+  left: 50%;
+
+  background-color: $bkg-panel;
+  color: $color-message;
+
+  padding: $panel-right-padding;
+
+  border-radius: $tab-radius;
+}
+
+@include keyframes(fadeOut) {
+  0% { opacity: 100%; }
+  100% { opacity: 0;}
+}
+
+@include keyframes(fadeIn) {
+  0% { opacity: 0; }
+  100% { opacity: 100%; }
+}
+
+#container-map-message.fadeOut {
+  @include animation('fadeOut 0.5s ease-out forwards');
+}
+
+#container-map-message.fadeIn {
+  @include animation('fadeIn 0.5s ease-out forwards');
+}
+
+//end panel for map cannot load message//////////////////////
+
 //panel for list
 #container-data {
 	position:absolute;
-
-  // bkg-list
-  background: $bkg-panel;
+  background-color: $bkg-panel;
 
 	top:0;
 	left:0;
+  bottom: $panel-left-bottom;
 	min-width: $panel-left-min-width;
 	max-width: $panel-left-max-width;
   width: $panel-left-max-width;
-  bottom: $panel-left-bottom;
 
   padding: $panel-left-padding;
 
-  // txt-light
   color: $color-panel;
 
-  //NOTE: mixin not sufficient for task here
-  //@include transition(transform 0.5s ease-in);
   -webkit-transition: -webkit-transform 0.5s ease-in;
   transition: transform 0.5s ease-in;
 }
@@ -118,8 +177,7 @@ input, textarea {
   position:absolute;
   left:100%;
 
-  // bkg-list
-  background: $bkg-panel;
+  background-color: $bkg-panel;
 
   border-bottom-right-radius: $tab-radius;
   cursor: pointer;
@@ -141,14 +199,17 @@ input, textarea {
   -webkit-transition: -webkit-transform 0.5s 0.5s;
   transition: transform 0.5s 0.5s;
 }
-.icon-circle-left {
+
+.icon-circle-left, .icon-alert {
   margin: .25em;
 }
+
 .icon-circle-down {
   margin: 0;
 }
-.icon-target {
-  margin: .75em .25em 0 .5em;
+
+.icon-alert {
+  color: $color-message;
 }
 
 /* animate icon to point in direction each panel will next slide to */
@@ -161,7 +222,12 @@ input, textarea {
   @include transform(rotate(0deg));
 }
 
-//panel for images
+#container-data .message {
+  z-index: -1;
+}
+// end panel for data
+
+// panel for images
 #container-images {
   position:absolute;
   top: 100% - $panel-left-bottom;
@@ -169,11 +235,12 @@ input, textarea {
   right: 0;
   bottom: 32px;
 
-  // bkg-list
-  background: $bkg-panel;
-
-  // txt-light
+  background-color: $bkg-panel;
   color: $color-panel;
+}
+
+#container-images .message {
+  margin: 1em;
 }
 
 #container-images.close {
@@ -209,13 +276,27 @@ input, textarea {
 }
 
 /*
-  ie cannot understand the calc in @keyframes:
-  more generally, transforms: https://connect.microsoft.com/IE/feedback/details/814380/
-  ie10+ no longer supports conditional css so use media query hack:
-  https://philipnewcomer.net/2014/04/target-internet-explorer-10-11-css/
-*/
+ * ie (also edge) cannot understand the calc in @keyframes:
+ * more generally, transforms: https://connect.microsoft.com/IE/feedback/details/814380/
+ * ie10+ no longer supports conditional css so use media query hack:
+ * https://philipnewcomer.net/2014/04/target-internet-explorer-10-11-css/
+ */
 @media all and (-ms-high-contrast: none), (-ms-high-contrast: active) {
   /* IE10+ CSS styles go here */
+  #container-images.close {
+    animation:msshrink 0.5s ease-out forwards;
+  }
+
+  #container-images.open {
+    animation:msunshrink 0.5s ease-in forwards;
+  }
+}
+
+/*
+ * Edge browser supports feature detection
+ * https://jeffclayton.wordpress.com/2015/04/07/css-hacks-for-windows-10-and-spartan-browser-preview/
+ */
+@supports (-ms-accelerator:true) {
   #container-images.close {
     animation:msshrink 0.5s ease-out forwards;
   }
@@ -249,7 +330,7 @@ input, textarea {
   top:-1.5em;
   right:0;
 
-  background: $bkg-panel;
+  background-color: $bkg-panel;
   cursor: pointer;
 
   padding:.25em .5em;
@@ -293,7 +374,6 @@ input, textarea {
 }
 
 .container-flex > input[type="text"] {
-  // may be applied to more generic input/
   border:none;
 
   background-color: $bkg-input;
@@ -302,42 +382,49 @@ input, textarea {
   padding:.25em;
   margin: .5em 0 0 .25em;
 
-  /* max-width:38px; */ /* TODO: use media queries for this */
-
-  flex: 1 1 38px; //38px; //ios doesn't understand anything but auto for flex-basis, so added media query for small handheld to control input width
+  /* ios understands only auto for flex-basis, so added media query for small handheld to control input width */
+  flex: 1 1 38px;
 }
 
 .path1, .path2 {
   fill: $color-panel;
 }
+
+.path3 {
+  fill: $color-message;
+}
+
 .btn-go {
   text-transform: uppercase;
   text-align: center;
-  width:1.6875em; /* 1.6875em makes button height equal to text input height at 16px font size, at 18px font size, it's just less than a pixel shorter */
+
+  /*
+   * 1.6875em makes button height equal to text input height at 16px font size,
+   * at 18px font size, it's just less than a pixel shorter
+   */
+  width:1.6875em;
   height:1.6875em;
   border:none;
   margin:.5em 0 0 .5em;
   padding:0;
 
-  background: $bkg-go;
+  background-color: $bkg-go;
+  color: $color-dark;
 }
 
 /* modified from http://output.jsbin.com/afAQAWA/2/ */
 .rotated-text {
-    margin:0;
-    display: inline-block;
-    overflow: hidden;
-    width: 1.5em;
-
-    //position:absolute;
-    top:2em;
+  margin:0;
+  display: inline-block;
+  overflow: hidden;
+  width: 1.5em;
 }
 
 .rotated-text-inner {
-    display: inline-block;
-    white-space: nowrap;
-    @include transform(translate(1.35em,0) rotate(90deg));
-    @include transform-origin(0 0);
+  display: inline-block;
+  white-space: nowrap;
+  @include transform(translate(1.35em,0) rotate(90deg));
+  @include transform-origin(0 0);
 
   line-height: 1.25em;
   text-transform: uppercase;
@@ -345,15 +432,17 @@ input, textarea {
 }
 
 .rotated-text-inner:before {
-    content: "";
-    float: left;
-    margin-top: 100%;
+  content: "";
+  float: left;
+  margin-top: 100%;
 }
-/* end taken from http://output.jsbin.com/afAQAWA/2/ */
+/* end modified from http://output.jsbin.com/afAQAWA/2/ */
 
 .container-list {
+  position:relative;
+  z-index:1;
   height:calc(100% - 8.5625em); /* 7.5625em is the height of .container-search */
-  overflow-y:scroll; /* auto; */
+  overflow-y:scroll;
   -webkit-overflow-scrolling: touch;
 }
 
@@ -366,16 +455,15 @@ input, textarea {
 .container-list li {
   padding:.5em 1em;
   margin: 0 .5em 2px .5em;
-  background: $bkg-item;
+  background-color: $bkg-item;
   cursor:pointer;
   @extend %clearfix;
 }
 
-/* TEMP ONLY! TO TEST */
 .container-list li.selected {
-  background: rgba(124, 179, 66, 1);
+  background-color: $bkg-item-selected;
+  color: $color-dark;
 }
-/* END TEMP ONLY! TO TEST */
 
 .container-list li:after {
   content: "";
@@ -390,33 +478,29 @@ input, textarea {
   margin-right: 1em;
 }
 
-/* .slides is a div that can be scrolled left/right and contains images all of the same height */
-/* NB: dummying this up, it seems that flex is not what I want. */
 .container-slides {
   position:absolute;
   top:0;
   bottom:0;
   left:0;
   right:0;
-  /* margin: 0 .5em .5em .5em; */
-  margin: 0 0 .5em 0;
-  /* overflow:auto; */
+  margin: 0 0 4px 0;
   overflow-x: scroll;
   overflow-y: hidden;
   -webkit-overflow-scrolling: touch;
 }
 
+/* #slides is a div that can be scrolled left/right and contains images all of the same height */
 #slides {
+  position: relative;
   display: flex;
   flex-flow: row nowrap;
-  height: calc(100% - .25em); // - .5em);
+  height: calc(100% - .25em);
+  z-index: 2;
 
   white-space: nowrap; //help safari
-
-  /* margin-bottom: .5em; */
 }
 
-// here assume div only one level deep from .slides
 #slides img {
   display:inline-block; //help safari
 
@@ -425,12 +509,11 @@ input, textarea {
   margin:0;
 
   border-top: 4px solid rgba(0, 0, 0, 0);
-  /* border-bottom: 2px solid rgba(0, 0, 0, 0); */
   border-left: 1px solid rgba(0, 0, 0, 0);
   border-right: 1px solid rgba(0, 0, 0, 0);
 
   max-height: calc(100%);
-  width:auto; // help IE/
+  width:auto; // help IE
 }
 
 #slides img:first-child {
@@ -439,16 +522,6 @@ input, textarea {
 
 #slides img:last-child {
   border-right-width: 2px;
-}
-
-::-webkit-scrollbar {
-  -webkit-appearance: none;
-  width: .5rem; /*7px;*/
-  height: .5rem; /*7px;*/
-}
-::-webkit-scrollbar-thumb {
-  /* bkg-scroll-thumb */
-  background-color: $bkg-scroll-thumb;
 }
 
 /* info window */
@@ -463,4 +536,3 @@ input, textarea {
   /* ensure ios browsers scroll when needed */
   -webkit-overflow-scrolling: touch;
 }
-

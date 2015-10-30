@@ -19,10 +19,14 @@
           <title>circle-left</title>
           <path class="path1" d="M512 1024c282.77 0 512-229.23 512-512s-229.23-512-512-512-512 229.23-512 512 229.23 512 512 512zM512 96c229.75 0 416 186.25 416 416s-186.25 416-416 416-416-186.25-416-416 186.25-416 416-416z"></path><path class="path2" d="M669.256 317.256l-90.512-90.512-285.254 285.256 285.256 285.254 90.508-90.508-194.744-194.746z"></path>
         </symbol>
+        <symbol id="icon-alert" viewBox="0 0 24 24">
+          <title>comment-alert-outline</title>
+          <path class="path3" fill="#000000" d="M9,22A1,1 0 0,1 8,21V18H4A2,2 0 0,1 2,16V4C2,2.89 2.9,2 4,2H20A2,2 0 0,1 22,4V16A2,2 0 0,1 20,18H13.9L10.2,21.71C10,21.9 9.75,22 9.5,22V22H9M10,16V19.08L13.08,16H20V4H4V16H10M13,10H11V6H13V10M13,14H11V12H13V14Z"></path>
+        </symbol>
       </defs>
     </svg>
     <div id="map-canvas"></div>
-  	<div id="container-data">
+    <div id="container-data">
 
       <div class="tab-search">
         <div class="rotated-text"><span class="rotated-text-inner">search</span></div>
@@ -33,7 +37,7 @@
         <h1>Find Meetups</h1>
         <div class="container-flex">
           <label>Near:</label>
-          <input type="text" name="where" placeholder="city" class="input-where" data-bind="textInput: location, event: {keyup: evalGoLocation}">
+          <input type="text" maxlength="25" name="where" placeholder="city" class="input-where" data-bind="textInput: location, event: {keyup: evalGoLocation}">
           <button class="btn-go" data-bind="click: goLocation">go</button>
         </div>
         <div class="container-flex">
@@ -43,28 +47,30 @@
       </div>
 
       <div class="container-list">
-          <ul data-bind="visible: showGroups(), foreach: search" style="display:none;">
-            <li data-bind="text:name, attr: {id: id}, css: {selected: $data === $parent.meetupSelected()}, click: triggerMarker"></li>
-          </ul>
-        </div>
-  	</div>
-    <!-- end container-data -->
+        <ul data-bind="visible: showGroups(), foreach: search" style="display:none;">
+          <li data-bind="text:name, attr: {id: id}, css: {selected: $data === $parent.meetupSelected()}, click: triggerMarker"></li>
+        </ul>
+        <div class="message" data-bind="html:meetupsMessage()"></div>
+      </div>
+
+    </div>
 
     <div id="container-images">
-      <div class="tab-images" data-bind="click:tabClick">
+      <div class="tab-images">
         <svg class="icon icon-circle-down"><use xlink:href="#icon-circle-down"></use></svg>
         <span>images</span>
       </div>
 
       <div class="container-slides">
-        <div id="slides" data-bind="visible: showImages(), foreach:images">
+        <div id="slides" data-bind="foreach:images">
           <img data-bind="attr: { src:src, title:title }">
         </div>
+        <div class="message" data-bind="html:imagesMessage()"></div>
       </div>
 
     </div>
 
-    <div id="debug" style="position:absolute;top:0;left:38%;right:0;text-align:right"></div>
+    <div id="container-map-message" data-bind="html:mapMessage(), visible: mapMessageVisible(), css: {fadeIn: mapUnfound(), fadeOut: !mapUnfound()}" style="display:none;"></div>
 
     <script src="https://maps.googleapis.com/maps/api/js?v=3.exp"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
