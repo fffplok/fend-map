@@ -2,7 +2,7 @@
   'use strict'
 
   // top level variables
-  var initialLocation = 'Minneapolis, Minnesota', //'minneapolis','Zr',  'bxqfp',
+  var initialLocation = 'Minneapolis', //'Minneapolis','Zr',  'bxqfp',
       initialZoom = 11;
 
   var map, geocoder, requestTimedout, viewModel, infoWindow, meetupFilter, panelSearch, panelImages;
@@ -54,7 +54,6 @@
 
   // using jQuery Deferred so that results may be processed in a single function: viewModel.goLocation
   function getMapCenter(strLoc) {
-    console.log('GETMAPCENTER')
     var geoPromise = $.Deferred();
     geocoder.geocode({'address': strLoc}, function(results, status) {
       if (status === google.maps.GeocoderStatus.OK) {
@@ -98,8 +97,8 @@
   // $.ajax doesn't provide a way of capturing errors when requesting jsonp. set up a simple mechanism for giving user information if load fails
   function doSetTimeout() {
     requestTimedout = setTimeout(function(){
-        console.log("failed to get meetup resources");
-        alert("failed to get meetup resources");
+        console.log("failed to get meetup resources, request timed out");
+        alert("failed to get meetup resources, request timed out");
     },8000);
   }
 
@@ -202,8 +201,6 @@
         dataType: "json",
 
         success: function(response) {
-          console.log('***getImages success***');
-
           self.imagesMessage('');
           if (response.stat === 'ok') {
             // do cleanup here before mapping a new set of images
@@ -238,78 +235,64 @@
 
     self.getMeetups = function() {
       $.ajax({
-        // all groups given a location string, e.g. 'minneapolis'
+        // all groups given a location string, e.g. 'Minneapolis'
         url: "https://api.meetup.com/find/groups?key=617467255c2e7b9d7a1c7d1646a20&photo-host=public&location='"+self.location()+"'&page=20&sign=true",
 
         dataType: "jsonp", // tell jQuery we're expecting JSONP
         success: function(response) {
-            // console.log('getMeetups success, strLoc, response.data:', strLoc, response.data);
-            console.log('***getMeetups success***');
-            console.log('  response:', response);
+          //clear message and groups list
+          self.meetupsMessage('');
+          self.emptyGroups();
 
-            self.meetupsMessage('');
-            self.emptyGroups();
+          // here check to see if lat/lng match within an arbitrary bounds of what's on the map, if not, it means that there was a successful response but likely a cached lookup. show meetup not found message so there is no discrepancy between map and meetup list
+          var latLng = map.getCenter();
 
-            // here check to see if lat/lng match within an arbitrary bounds of what's on the map, if not, it means that there was a successful response but likely a cached lookup. show meetup not found message so there is no discrepancy between map and meetup list
-            var latLng = map.getCenter();
+          var mapLatLng = {
+            lat: Number(latLng.lat()),
+            lng:  Number(latLng.lng())
+          }
 
-            var mapLatLng = {
-              lat: Number(latLng.lat()),
-              lng:  Number(latLng.lng())
+          if (response.data.length) {
+            var meetupLatLng = {
+              lat:  Number(response.data[0].lat),
+              lng:  Number(response.data[0].lon)
             }
 
-            if (response.data.length) {
-              var meetupLatLng = {
-                lat:  Number(response.data[0].lat),
-                lng:  Number(response.data[0].lon)
-              }
-
-              if (Math.abs(mapLatLng.lat - meetupLatLng.lat) < 7 && Math.abs(mapLatLng.lng - meetupLatLng.lng) < 7) {
-                console.log('MAP IS OK');
-                var mappedGroups = $.map(response.data, function(item, ix) { return new Group(item, ix) });
-                self.groups(mappedGroups);
-              } else {
-                console.log('MAP DOESN\'T MATCH MEETUP LOCATION');
-                self.meetupsMessage('No meetups were found for ' + self.location() + '.' + self.iconAlert)
-              }
-
+            if (Math.abs(mapLatLng.lat - meetupLatLng.lat) < 7 && Math.abs(mapLatLng.lng - meetupLatLng.lng) < 7) {
+              //map is ok
+              var mappedGroups = $.map(response.data, function(item, ix) { return new Group(item, ix) });
+              self.groups(mappedGroups);
+            } else {
+              //map doesn't match meetup location
+              self.meetupsMessage('No meetups were found for ' + self.location() + '.' + self.iconAlert)
             }
 
-            console.log('checking lat/lng');
-            console.log('  mapLatLng:', mapLatLng);
-            console.log('  meetupLatLng:', meetupLatLng);
-            console.log('  response.meta.status:', response.meta.status);
+          }
 
-            console.log('getMeetups after mapping, self.groups().length:', self.groups().length);
-            if (self.groups().length === 0) {
-              self.meetupsMessage('No meetups were found for ' + self.location() + '.' + self.iconAlert);
-            }
+          if (self.groups().length === 0) {
+            self.meetupsMessage('No meetups were found for ' + self.location() + '.' + self.iconAlert);
+          }
 
-            self.toggleShowGroups();
+          self.toggleShowGroups();
 
-            clearTimeout(requestTimedout);
+          clearTimeout(requestTimedout);
         },
         error: function(response) {
-            console.log('getMeetups error:', response);
             self.meetupsMessage('Unable to load Meetups for ' + self.location() + ', error: ' + response.status + '.' + self.iconAlert);
         }
       });
     }
 
     self.toggleShowGroups = function() {
-      console.log('toggleShowGroups');
       self.showGroups(!self.showGroups());
     };
 
     self.evalGoLocation = function(data, e) {
-      console.log('***evalGoLocation***')
       // when return is keyed into input-where, trigger goLocation
       if (e.keyCode == 13) self.goLocation();
     }
 
     self.goLocation = function() {
-      console.log('goLocation, self.oldLocation, self.location():', self.oldLocation, self.location());
-
       // change location only if it has changed and is not empty
       var selfLoc = self.location();
       if (selfLoc !== '' && self.oldLocation !== selfLoc) {
@@ -318,9 +301,6 @@
 
         // be sure to get geo coords before we get data
         getMapCenter(self.location()).then(function(result) {
-          // console.log('***goLocation***');
-          // console.log('  getMapCenter result:', result);
-
           self.mapMessageVisible(false);
 
           map.setCenter(result);
@@ -350,8 +330,6 @@
             // if map cannot be found, meetups and images aren't requested. show these messages also
             self.meetupsMessage('No search can be done for meetups at ' + self.location() + '.' + self.iconAlert);
             self.imagesMessage('No search can be done for images at ' + self.location() + '.' + self.iconAlert);
-
-            console.log('goLocation, Geocode was not successful for the following reason: ' + err);
         });
       }
     }
@@ -366,7 +344,6 @@
               if (typeof group.marker !== 'undefined') group.marker.setVisible(true);
               return group;
           } else {
-            // console.log('invisible group.marker:', group.marker);
             if (typeof group.marker !== 'undefined') group.marker.setVisible(false);
             // close infoWindow if open and ensure no meetup is selected
             infoWindow.close();
@@ -379,11 +356,13 @@
 
   } //end ViewModel
 
+  // model for image data
   function ImgInfo(data) {
     this.src = 'https://farm'+data.farm+'.staticflickr.com/'+data.server+'/'+data.id+'_'+data.secret+'.jpg';
     this.title = data.title;
   }
 
+  // model for meetup data
   function Group(data, ix) {
     var prefix = 'm',
     timeout = ix*100;

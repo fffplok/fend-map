@@ -1,5 +1,7 @@
 $font-stack:	'Roboto Condensed', sans-serif;
 $font-size:	16px;
+$font-size-small: 13px;
+$font-size-large: 20px;
 
 $bkg-panel: rgba(66, 66, 66, 0.85);
 $bkg-scroll-thumb: rgba(66, 66, 66, 1);
@@ -15,14 +17,15 @@ $color-dark: rgba(66, 66, 66, 1);
 $panel-left-min-width: 150px;
 $panel-left-max-width: 35%;
 $panel-left-bottom: 30%;
-$panel-left-padding: 0 .5em;
+$panel-left-padding-small: 0 .5rem 0 .5rem;
+$panel-left-padding: 0 .5rem 0 1rem;
 
 $panel-right-width: 55%;
-$panel-right-padding: .5em 1em 1em 1em;
+$panel-right-padding: .5rem 1rem 1rem 1rem;
 
-$tab-radius: .5em .5em;
+$tab-radius: .5rem .5rem;
 
-/* and mixins */
+/* mixins */
 @mixin keyframes($animation-name) {
   @-webkit-keyframes #{$animation-name} {
     @content;

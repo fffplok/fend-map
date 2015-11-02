@@ -28,9 +28,9 @@ function logError(err) {
 }
 
 gulp.task('scripts', function(){
-	gulp.src(src.js) //, {base: 'src'})
+	gulp.src(src.js)
 	  .pipe(concat('all.js'))
-		//.pipe(uglify())
+		.pipe(uglify())
 		.pipe(rename('app.min.js'))
 		.pipe(gulp.dest(dest.js))
     .pipe(reload({stream: true}));
@@ -44,8 +44,7 @@ gulp.task('html', function(){
 
 gulp.task('sass', function () {
   gulp.src(src.css)
-    //.pipe(sass({outputStyle: 'compressed'}).on('error', logError)) //sass.logError))
-    .pipe(sass().on('error', logError))
+    .pipe(sass({outputStyle: 'compressed'}).on('error', logError)) //sass.logError))
     .pipe(rename('styles.min.css'))
     .pipe(gulp.dest(dest.css))
     .pipe(reload({stream: true}));

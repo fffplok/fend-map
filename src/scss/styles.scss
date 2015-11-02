@@ -27,6 +27,15 @@ input, textarea {
   color:$color-panel;
 }
 
+/* control svg path color with css */
+.path1, .path2 {
+  fill: $color-panel;
+}
+
+.path3 {
+  fill: $color-message;
+}
+
 /* scrollbar customization for webkit browsers */
 ::-webkit-scrollbar {
   -webkit-appearance: none;
@@ -38,48 +47,6 @@ input, textarea {
   background-color: $bkg-scroll-thumb;
 }
 
-/*
- * a stab at viewing windows phone emulation in ie11.
- * see https://msdn.microsoft.com/en-us/library/ie/hh869615(v=vs.85).aspx
- */
-@media screen and (orientation: landscape) {
-  @-ms-viewport {
-    width: 1024px;
-    height: 768px;
-  }
-}
-
-@media screen and (orientation: portrait) {
-  @-ms-viewport {
-    width: 768px;
-    height: 1024px;
-  }
-}
-
-/*
- * for small viewports and when flex-basis with px not supported (ios browsers)
- * we need to set width of input-where
- *
- * iphone 6 plus 414x736
- */
-@media screen and (orientation: portrait) and (max-width:414px) {
-  .input-where {
-    width:35%;
-  }
-  .input-what {
-    width:60%;
-  }
-}
-
-@media screen and (orientation: landscape) and (max-height:414px) {
-  .input-where {
-    width:50%;
-  }
-  .input-what {
-    width:70%;
-  }
-}
-
 .message {
   position: absolute;
   top: 0;
@@ -89,13 +56,13 @@ input, textarea {
   color: $color-message;
 }
 
-//panel for map cannot load message///////////////////////////
+/*** panel for map cannot load message ***/
 #container-map-message {
   position:absolute;
 
-  top: 20%;
+  top: 25%;
   right: 10%;
-  bottom: 55%;
+  bottom: 58%;
   left: 50%;
 
   background-color: $bkg-panel;
@@ -123,10 +90,9 @@ input, textarea {
 #container-map-message.fadeIn {
   @include animation('fadeIn 0.5s ease-out forwards');
 }
+/*** end panel for map cannot load message ***/
 
-//end panel for map cannot load message//////////////////////
-
-//panel for list
+/*** left panel, contains meetup list ***/
 #container-data {
 	position:absolute;
   background-color: $bkg-panel;
@@ -138,7 +104,7 @@ input, textarea {
 	max-width: $panel-left-max-width;
   width: $panel-left-max-width;
 
-  padding: $panel-left-padding;
+  padding: $panel-left-padding-small;
 
   color: $color-panel;
 
@@ -194,14 +160,14 @@ input, textarea {
 }
 
 .icon {
-  width:1em;
-  height:1em;
+  width:1rem;
+  height:1rem;
   -webkit-transition: -webkit-transform 0.5s 0.5s;
   transition: transform 0.5s 0.5s;
 }
 
 .icon-circle-left, .icon-alert {
-  margin: .25em;
+  margin: .25rem;
 }
 
 .icon-circle-down {
@@ -225,9 +191,139 @@ input, textarea {
 #container-data .message {
   z-index: -1;
 }
-// end panel for data
+/* end left panel, contains meetup list */
 
-// panel for images
+
+.container-search {
+  margin-bottom:1rem;
+}
+
+.container-search h1 {
+  font-size:1em;
+  padding:.5rem 0;
+  margin: 0;
+  letter-spacing: .15rem;
+}
+
+.container-flex {
+  display:flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  align-content: flex-start;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.container-flex > label {
+  flex: 0 0 2.25rem;
+  padding:.25rem 0;
+  margin: .5rem 0 0 0;
+}
+
+.container-flex > input[type="text"] {
+  border:none;
+
+  background-color: $bkg-input;
+
+  /* padding and margin same for label */
+  padding:.25rem;
+  margin: .5rem 0 0 .25rem;
+
+  /* ios understands only auto for flex-basis, so added media query for small handheld to control input width */
+  flex: 1 1 38px;
+}
+
+.btn-go {
+  text-transform: uppercase;
+  text-align: center;
+
+  /*
+   * 1.6875em makes button height equal to text input height at 16px font size,
+   * at 18px font size, it's just less than a pixel shorter
+   */
+  width:1.6875rem;
+  height:1.6875rem;
+  border:none;
+  margin:.5rem 0 0 .5rem;
+  padding:0;
+
+  background-color: $bkg-go;
+  color: $color-dark;
+}
+
+/*
+ * rotate text for left panel
+ *
+ * modified from http://output.jsbin.com/afAQAWA/2/
+ */
+.rotated-text {
+  margin:0;
+  display: inline-block;
+  overflow: hidden;
+  width: 1.5em;
+}
+
+.rotated-text-inner {
+  display: inline-block;
+  white-space: nowrap;
+  @include transform(translate(1.35em,0) rotate(90deg));
+  @include transform-origin(0 0);
+
+  line-height: 1.25rem;
+  text-transform: uppercase;
+  margin-top:.5rem;
+}
+
+.rotated-text-inner:before {
+  content: "";
+  float: left;
+  margin-top: 100%;
+}
+/* end rotate text for left panel */
+
+.container-list {
+  position:relative;
+  z-index:1;
+  height:calc(100% - 8.5625rem); /* 7.5625rem is the height of .container-search */
+  overflow-y:scroll;
+  -webkit-overflow-scrolling: touch;
+}
+
+.container-list ul {
+  padding:0;
+  margin:0;
+  list-style-type: none;
+}
+
+.container-list li {
+  padding:.5rem 1rem;
+  margin: 0 .5rem 2px 0;
+  background-color: $bkg-item;
+  cursor:pointer;
+  @extend %clearfix;
+}
+
+.container-list li.selected {
+  background-color: $bkg-item-selected;
+  color: $color-dark;
+}
+
+.container-list li:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+.container-list li img {
+  position:relative;
+  float:left;
+  max-height:60px;
+  margin-right: 1rem;
+}
+/*** end left panel, contains meetup list ***/
+
+/*** bottom panel, contains images ***/
 #container-images {
   position:absolute;
   top: 100% - $panel-left-bottom;
@@ -240,7 +336,7 @@ input, textarea {
 }
 
 #container-images .message {
-  margin: 1em;
+  margin: 1rem;
 }
 
 #container-images.close {
@@ -326,156 +422,24 @@ input, textarea {
 
 .tab-images {
   position:absolute;
-  height:1.5em;
-  top:-1.5em;
+  height:1.5rem;
+  top:-1.5rem;
   right:0;
 
   background-color: $bkg-panel;
   cursor: pointer;
 
-  padding:.25em .5em;
+  padding:.25rem .5rem;
   border-top-left-radius: $tab-radius;
 }
 
 .tab-images > span {
   position:relative;
-  top:-.15em; //-.25em;
-  padding:0 0 .25em .25em;
+  top:-.15rem; //-.25rem;
+  padding:0 0 .25rem .25rem;
 
   /* same font treatment for both tabs */
   text-transform: uppercase;
-}
-
-.container-search {
-  margin-bottom:1em;
-}
-
-.container-search h1 {
-  font-size:1em;
-  padding:.5em 0;
-  margin: 0;
-  letter-spacing: .15em;
-}
-
-.container-flex {
-  display:flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  justify-content: flex-start;
-  align-content: flex-start;
-  align-items: flex-start;
-  width: 100%;
-}
-
-.container-flex > label {
-  flex: 0 0 2.25em;
-  padding:.25em 0;
-  margin: .5em 0 0 0;
-}
-
-.container-flex > input[type="text"] {
-  border:none;
-
-  background-color: $bkg-input;
-
-  /* padding and margin same for label */
-  padding:.25em;
-  margin: .5em 0 0 .25em;
-
-  /* ios understands only auto for flex-basis, so added media query for small handheld to control input width */
-  flex: 1 1 38px;
-}
-
-.path1, .path2 {
-  fill: $color-panel;
-}
-
-.path3 {
-  fill: $color-message;
-}
-
-.btn-go {
-  text-transform: uppercase;
-  text-align: center;
-
-  /*
-   * 1.6875em makes button height equal to text input height at 16px font size,
-   * at 18px font size, it's just less than a pixel shorter
-   */
-  width:1.6875em;
-  height:1.6875em;
-  border:none;
-  margin:.5em 0 0 .5em;
-  padding:0;
-
-  background-color: $bkg-go;
-  color: $color-dark;
-}
-
-/* modified from http://output.jsbin.com/afAQAWA/2/ */
-.rotated-text {
-  margin:0;
-  display: inline-block;
-  overflow: hidden;
-  width: 1.5em;
-}
-
-.rotated-text-inner {
-  display: inline-block;
-  white-space: nowrap;
-  @include transform(translate(1.35em,0) rotate(90deg));
-  @include transform-origin(0 0);
-
-  line-height: 1.25em;
-  text-transform: uppercase;
-  margin-top:.5em;
-}
-
-.rotated-text-inner:before {
-  content: "";
-  float: left;
-  margin-top: 100%;
-}
-/* end modified from http://output.jsbin.com/afAQAWA/2/ */
-
-.container-list {
-  position:relative;
-  z-index:1;
-  height:calc(100% - 8.5625em); /* 7.5625em is the height of .container-search */
-  overflow-y:scroll;
-  -webkit-overflow-scrolling: touch;
-}
-
-.container-list ul {
-  padding:0;
-  margin:0;
-  list-style-type: none;
-}
-
-.container-list li {
-  padding:.5em 1em;
-  margin: 0 .5em 2px .5em;
-  background-color: $bkg-item;
-  cursor:pointer;
-  @extend %clearfix;
-}
-
-.container-list li.selected {
-  background-color: $bkg-item-selected;
-  color: $color-dark;
-}
-
-.container-list li:after {
-  content: "";
-  display: table;
-  clear: both;
-}
-
-.container-list li img {
-  position:relative;
-  float:left;
-  max-height:60px;
-  margin-right: 1em;
 }
 
 .container-slides {
@@ -495,7 +459,7 @@ input, textarea {
   position: relative;
   display: flex;
   flex-flow: row nowrap;
-  height: calc(100% - .25em);
+  height: calc(100% - .25rem);
   z-index: 2;
 
   white-space: nowrap; //help safari
@@ -509,8 +473,6 @@ input, textarea {
   margin:0;
 
   border-top: 4px solid rgba(0, 0, 0, 0);
-  border-left: 1px solid rgba(0, 0, 0, 0);
-  border-right: 1px solid rgba(0, 0, 0, 0);
 
   max-height: calc(100%);
   width:auto; // help IE
@@ -523,6 +485,7 @@ input, textarea {
 #slides img:last-child {
   border-right-width: 2px;
 }
+/*** bottom panel, contains images ***/
 
 /* info window */
 .gm-style-iw img {
@@ -536,3 +499,104 @@ input, textarea {
   /* ensure ios browsers scroll when needed */
   -webkit-overflow-scrolling: touch;
 }
+
+
+/*
+ * small viewports
+ *
+ * when flex-basis with px not supported (ios browsers)
+ * we need to set width of input-where
+ *
+ * iphone 6 plus 414x736
+ */
+
+@media screen and (orientation: portrait) and (max-width:414px) {
+  html, body, input, button {
+    font-size: $font-size-small;
+  }
+  .input-where {
+    width:35%;
+  }
+  .input-what {
+    width:60%;
+  }
+}
+
+@media screen and (orientation: landscape) and (max-height:414px) {
+  html, body, input, button {
+    font-size: $font-size-small;
+  }
+  .input-where {
+    width:50%;
+  }
+  .input-what {
+    width:70%;
+  }
+}
+
+/*
+ * most viewports
+ *
+ * up to 1366x768
+ * most common resolution http://www.w3counter.com/globalstats.php 09.30.15
+ */
+
+@media screen and (min-width:415px) and (max-width:1366px) {
+  #container-data {
+    padding: $panel-left-padding;
+  }
+  .container-list li {
+    padding: .75rem 1rem;
+    margin: 0 .5rem .25rem 0;
+  }
+
+  .container-search {
+    margin-top: .5rem;
+    margin-bottom: 1.5rem;
+    margin-right: .5rem;
+  }
+
+  #slides img {
+    border-top: 8px solid rgba(0, 0, 0, 0);
+  }
+}
+
+/*
+ * large viewports
+ *
+ */
+
+@media screen and (min-width:1367px) {
+  html, body, input, button {
+    font-size: $font-size-large;
+  }
+
+  #container-data {
+    max-width: 650px;
+    padding: $panel-left-padding;
+  }
+
+  .container-list li {
+    padding: .75rem 1rem;
+    margin: 0 .5rem .25rem 0;
+  }
+
+  .container-search {
+    margin-top: .5rem;
+    margin-bottom: 1.5rem;
+    margin-right: 1rem;
+  }
+
+  #container-map-message {
+    right: 30%;
+  }
+
+  #slides img {
+    border-top: 8px solid rgba(0, 0, 0, 0);
+  }
+
+  .container-slides {
+    margin: 0 0 8px 0;
+  }
+}
+
