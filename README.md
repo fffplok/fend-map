@@ -11,7 +11,7 @@
 * Clicking on a meetup in the search panel likewise opens up an info window.
 * The list of meetups may be filtered by name. Begin typing into the Filter input and the list of meetups and markers will reflect what is matched.
 
-**Try it out:** <a href="http://fffplok.github.io/fend-map/">Neighborhood Map</a>
+**Try it out:** <a href="http://fffplok.github.io/fend-map/dist">Neighborhood Map</a>
 
 ![alt text](https://raw.githubusercontent.com/fffplok/fend-map/master/src/img/p5-capture.png "Minneapolis Meetups")
 
