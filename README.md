@@ -1,6 +1,6 @@
-# Udacity FEND Project 5: Neighborhood Map Project
+## Udacity FEND Project 5: Neighborhood Map Project
 
-### How to use this app:
+#### How to use this app:
 
 * Search for any location: enter a city name (Minneapolis is preselected), press enter or click the Go button.
 * Meetups are retrieved from Meetup.com and displayed in the search panel. Images retrieved from Flickr.com associated with the location appear in the images panel.
