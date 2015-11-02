@@ -13,5 +13,5 @@
 
 **Try it out:** <a href="http://fffplok.github.io/fend-map/">Neighborhood Map</a>
 
-![alt text](https://raw.githubusercontent.com/fffplok/fend-map/src/img/p5-capture.png "Minneapolis Meetups")
+![alt text](https://raw.githubusercontent.com/fffplok/fend-map/master/src/img/p5-capture.png "Minneapolis Meetups")
 
