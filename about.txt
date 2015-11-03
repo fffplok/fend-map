@@ -1,0 +1,33 @@
+the 3rd party apis used
+https://www.flickr.com/services/api/
+http://www.meetup.com/meetup_api/
+https://developers.google.com/maps/documentation/javascript/reference
+
+resources for svg icons
+https://icomoon.io
+https://materialdesignicons.com/
+
+For managing scroll when markers are clicked:
+https://developer.mozilla.org/en-US/docs/Web/API/Element/scrollIntoView
+
+tooled up for this project. used gulp as task runner. sass to compile css. browsersync for viewing on file save in multiple browsers simultaneously 
+https://discussions.udacity.com/t/gulp-and-setting-up-a-gulp-workflow-intermediate/24359
+https://github.com/JohnUdacity/gulp-start
+http://zerosixthree.se/8-sass-mixins-you-must-have-in-your-toolbox/
+http://ryanchristiani.com/getting-started-with-gulp-and-sass/
+http://www.browsersync.io/
+
+learning knockout. google, stackoverflow for searching specific questions
+http://knockoutjs.com/
+http://www.johnpapa.net/spa/
+https://channel9.msdn.com/Events/TechEd/NorthAmerica/2013/DEV-B338#fbid=
+
+Considered using multiple view models but went back to a single as there wasn't an advantage for my app.
+http://www.wrapcode.com/knockoutjs/communication-between-multiple-view-models-in-knockoutjs-mvvm-the-right-approach/
+
+workarounds for microsoft browsers
+https://philipnewcomer.net/2014/04/target-internet-explorer-10-11-css/
+https://jeffclayton.wordpress.com/2015/04/07/css-hacks-for-windows-10-and-spartan-browser-preview/
+
+microsoft edge but not ie11 and below support this, so used jquery deferred
+http://www.html5rocks.com/en/tutorials/es6/promises/
